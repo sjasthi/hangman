@@ -4,7 +4,7 @@ session_start();
 const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క");
 
  
-$correctQuote = strtolower(quotes[5]);
+$correctQuote = strtoupper(quotes[5]);
 
 // echo $correctQuote;
 if (empty($_SESSION["test"])) {
@@ -21,6 +21,12 @@ function createButtons()
         $attributePhrase = "enabled";
         $attributeLetter = "disabled";
     }
+
+    if ($_SESSION["gameOver"]) {
+        $attributePhrase = "disabled";
+        $attributeLetter = "disabled";
+    }
+
     echo "<label for='single-char-input'>Enter Letter </label>";
     echo "<input type='text' name='letter-guess' id='single-char-input' maxlength ='1' $attributeLetter>";
     echo "<input type='submit' value='Submit' $attributeLetter>";
@@ -72,13 +78,16 @@ function validateInputs()
 {
     if (isset($_GET['letter-guess'])) { // If letter guess is set.
 
-        $guess_letter = strtolower($_GET['letter-guess']); // Get the letter from the URL.
+        $guess_letter = strtoupper($_GET['letter-guess']); // Get the letter from the URL.
 
         if (!in_array($guess_letter, $_SESSION["test"])) {
             if (in_array($guess_letter, $_SESSION["baseChars"]) || in_array($guess_letter, $_SESSION["logicalChars"]) ) { // If the letter is a correct guess, update 'test' array.
                 updateArray($guess_letter);
             } else {
                 $_SESSION["guesses"] = $_SESSION["guesses"] + 1; // If the letter is incorrect, add one to guesses.
+                if ($_SESSION["guesses"] >= 6) {
+                    $_SESSION["gameOver"] = true;
+                }
             }
         }
     }
@@ -88,14 +97,17 @@ function validateInputs()
 function validatePhrase() {
     if (isset($_GET['phrase-guess'])) {
         
-        $guess_phrase = strtolower(trim($_GET['phrase-guess']));
+        $guess_phrase = strtoupper(trim($_GET['phrase-guess']));
         $logicalChars = getLogicalChars($guess_phrase);
 
         if ($_SESSION["logicalChars"] === $logicalChars) {
             $_SESSION["test"] = $_SESSION["logicalChars"];
             $_SESSION["fullMatch"] = array_fill(0, $_SESSION["quoteLength"], true);
+            $_SESSION["guesses"] = 7;
+            $_SESSION["gameOver"] = true;
         } else {
             $_SESSION["guesses"] = 6;
+            $_SESSION["gameOver"] = true;
         }
     }
 }
@@ -137,13 +149,12 @@ function updateArray($letter)
 
         // set full match to true if logical characters match
         if (strcmp($letter, $_SESSION["logicalChars"][$index]) == 0) {
-            $_SESSION["test"][$index] = strtoupper($letter);
+            $_SESSION["test"][$index] = $letter;
             $_SESSION["fullMatch"][$index] = true;
             $_SESSION["remainingChars"]--;
         }
         else if (strcmp($letter, $_SESSION["baseChars"][$index]) == 0) {
-            $_SESSION["test"][$index] = strtoupper($letter);
-            // $_SESSION["fullMatch"][$index] = false;
+            $_SESSION["test"][$index] = $letter;
             $_SESSION["remainingChars"]--;
         }
     }
@@ -175,8 +186,14 @@ function setState()
         case 5:
             echo "./css/images/gallow5.png";
             break;
-        default:
+        case 6:
             echo "./css/images/gallow6.png";
+            break;
+        case 7:
+            echo "./css/images/gallow7.png";
+            break;
+        default:
+            echo "Whoops! Looks like somethings broken.";
             break;
     }
 }
@@ -190,6 +207,7 @@ function resetGame($correctQuote)
     $_SESSION["quoteLength"] = getLength($correctQuote);
     $_SESSION["remainingChars"] = $_SESSION["quoteLength"];
     $_SESSION["quoteLength"] = $_SESSION["remainingChars"];
+    $_SESSION["gameOver"] = false;
 
    // initialize and dynamically fill both arrays base on the quote length
     $_SESSION["fullMatch"] = array_fill(0, $_SESSION["quoteLength"], false);
