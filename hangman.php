@@ -1,10 +1,10 @@
 <?php
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 session_start();
-const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క");
+const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క", "Hi there", "మిమ్ములని కలసినందుకు సంతోషం", "For What its Worth", "నేను దుకాణానికి వెళ్తున్నాను");
 
  
-$correctQuote = strtoupper(quotes[5]);
+$correctQuote = strtoupper(quotes[9]);
 
 // echo $correctQuote;
 if (empty($_SESSION["test"])) {
@@ -41,7 +41,7 @@ function createButtons()
 // Creates HTML for the inputs.
 function createInputs($correctQuote)
 {
-var_dump($_SESSION["fullMatch"]); // remove this to fix ui
+//var_dump($_SESSION["fullMatch"]); // remove this to fix ui
 
     $quote_length = getLength($correctQuote);
     echo "<ul>";
@@ -53,7 +53,11 @@ var_dump($_SESSION["fullMatch"]); // remove this to fix ui
         #if the letter is fill and it is a full logical match, then highlight the color in green background Color
 
         
-        if ( ($_SESSION["test"][$i] != "_") &&  ($_SESSION["fullMatch"][$i] == true)) {
+        # if the quote letter is a space, make it blank
+        if ($_SESSION["test"][$i] == " ") {
+            echo "<li class='spaceChar'> " . $_SESSION["test"][$i] . "</li>";
+        }
+        else if ( ($_SESSION["test"][$i] != "_") &&  ($_SESSION["fullMatch"][$i] == true)) {
             # else create list item with no class name
             echo "<li class='correctLetter'> " . $_SESSION["test"][$i] . "</li>";
         } 
@@ -115,18 +119,32 @@ function validatePhrase() {
 // Use wpapi api to get base characters
 function getBaseChars($quote)
 {
-    $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getBaseCharacters.php?input1=' . $quote . '&input2=English');
-    $sanitizedData = substr($data, stripos($data, "{"));
-    $decodedData = json_decode($sanitizedData);
-    var_dump($decodedData->data);
+    $quote_array = explode(" ", $quote); // Breaks the quote into an array of words.
+    $result = [];
+
+    for ($i = 0; $i < count($quote_array); $i++) {
+        $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getBaseCharacters.php?input1=' . $quote_array[$i] . '&input2=English');
+        $sanitizedData = substr($data, stripos($data, "{"));
+        $decodedData = json_decode($sanitizedData);
+        var_dump($decodedData->data);
+
+        if ($i == 0) { // Reassembles the quote with spaces.
+            $result = $decodedData->data;
+        }
+        else {
+            array_push($result, " ");
+            $result = array_merge($result, $decodedData->data);
+        }
+    }
     echo "<br>";
-    return $decodedData->data;
+    return $result;
 }
 
 // Use wpapi api to get logical characters
 function getLogicalChars($quote)
 {
-    $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLogicalChars.php?string=' . $quote . '&language=English');
+    $new_quote = str_replace(" ", "%20", $quote); // Converts spaces into a compatable charachter for the API.
+    $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLogicalChars.php?string=' . $new_quote . '&language=English');
     $sanitizedData = substr($data, stripos($data, "{"));
     $decodedData = json_decode($sanitizedData);
     // var_dump($decodedData->data);
@@ -136,7 +154,8 @@ function getLogicalChars($quote)
 // Use wpapi api to get the length of string
 function getLength($quote)
 {
-    $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLength.php?input1=' . $quote . '&input2=English');
+    $new_quote = str_replace(" ", "%20", $quote); // Converts spaces into a compatable charachter for the API.
+    $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLength.php?input1=' . $new_quote . '&input2=English');
     $santitizeData = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data);
     $decodedData = json_decode($santitizeData);
     return $decodedData->data;
@@ -145,6 +164,7 @@ function getLength($quote)
 //Updates session array for instance of the guess letter
 function updateArray($letter)
 {
+
     for ($index = 0; $index < count($_SESSION["baseChars"]); $index++) {
 
         // set full match to true if logical characters match
@@ -208,16 +228,24 @@ function resetGame($correctQuote)
     $_SESSION["remainingChars"] = $_SESSION["quoteLength"];
     $_SESSION["quoteLength"] = $_SESSION["remainingChars"];
     $_SESSION["gameOver"] = false;
+    $_SESSION["test"] = [];
 
-   // initialize and dynamically fill both arrays base on the quote length
+    // initialize and dynamically fill both arrays base on the quote length
     $_SESSION["fullMatch"] = array_fill(0, $_SESSION["quoteLength"], false);
-    $_SESSION["test"] = array_fill(0, $_SESSION["quoteLength"], "_");
+    // $_SESSION["test"] = array_fill(0, $_SESSION["quoteLength"], "_");
 
-    //    // dynamically fill both arrays base on the quote length
-    // for($i = 0; $i < $quote_length; $i++){
-    //     array_push($_SESSION["fullMatch"], "false");  // indicates if the choosen letter at certain index matches the logical character (false by default)
-    //     array_push($_SESSION["test"], "_");
-    // }
+    // Brought this back to fill test with spaces and underscores.
+     for($i = 0; $i < $_SESSION["quoteLength"]; $i++){
+
+        if ($_SESSION["baseChars"][$i] == " ") {
+            array_push($_SESSION["test"], " ");
+            $_SESSION["fullMatch"][$i] = true;
+            $_SESSION["remainingChars"]--;
+        }
+        else {
+            array_push($_SESSION["test"], "_");
+        }
+    }
  
 }
 
