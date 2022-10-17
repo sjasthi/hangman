@@ -81,21 +81,23 @@ CREATE TABLE `quote_table` (
   `id` int(5) NOT NULL,
   `author` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `topic` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `quote` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL
+  `quote` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `quote_date` date COLLATE utf8mb4_unicode_ci NOT NULL,
+  `quote_time` time COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `quote_table`
 --
 
-INSERT INTO `quote_table` (`id`, `author`, `topic`, `quote`) VALUES
+INSERT INTO `quote_table` (`id`, `author`, `topic`, `quote`, `quote_date`, `quote_time`) VALUES
 
-(1, 'ics499', 'slider', 'web app development is fun'),
-(2, 'mario', 'demo', 'everything is good'),
-(3, 'testing', 'testing', 'programming in php is fun'),
-(4, 'test', 'test', 'test'),
-(5, 'junk2', 'junk', 'junk'),
-(6, 'junk2', 'junk', 'sample quote');
+(1, 'ics499', 'slider', 'web app development is fun', '2022-10-17', '08:00:00'),
+(2, 'mario', 'demo', 'everything is good', '2022-10-17', '20:00:00'),
+(3, 'testing', 'testing', 'programming in php is fun', '2022-10-18', '08:00:00'),
+(4, 'test', 'test', 'test', '2022-10-18', '20:00:00'),
+(5, 'junk2', 'junk', 'junk', '2022-10-19', '08:00:00'),
+(6, 'junk2', 'junk', 'sample quote', '2022-10-19', '20:00:00');
 
 --
 -- Indexes for dumped tables
