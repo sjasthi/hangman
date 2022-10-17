@@ -3,12 +3,12 @@ define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 session_start();
 const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క", "Hi there", "మిమ్ములని కలసినందుకు సంతోషం", "For What its Worth", "నేను దుకాణానికి వెళ్తున్నాను");
 
- 
-$correctQuote = strtoupper(quotes[9]);
 
-// echo $correctQuote;
+echo "QUOTE: " . $_SESSION['quote'] . "<br>";
+
+
 if (empty($_SESSION["test"])) {
-    resetGame($correctQuote);
+    resetGame();
 }
 
 // Creates HTML for the buttons.
@@ -39,11 +39,13 @@ function createButtons()
 }
 
 // Creates HTML for the inputs.
-function createInputs($correctQuote)
+function createInputs()
 {
 //var_dump($_SESSION["fullMatch"]); // remove this to fix ui
 
-    $quote_length = getLength($correctQuote);
+    $quote_length = getLength($_SESSION['quote']);
+    echo "quote length: ";
+    echo $quote_length;
     echo "<ul>";
     for ($i = 0; $i <  $quote_length;  $i++) {
         #echo "<span>" . "&nbsp;&nbsp" .$_SESSION["test"][$i] . "</span>";
@@ -76,14 +78,12 @@ function getCurrentQuote()
 {
 }
 
-
 // Updates the 'test' array and guesses.
 function validateInputs()
 {
     if (isset($_GET['letter-guess'])) { // If letter guess is set.
 
-        $guess_letter = strtoupper($_GET['letter-guess']); // Get the letter from the URL.
-
+        $guess_letter = $_GET['letter-guess']; // Get the letter from the URL.
         if (!in_array($guess_letter, $_SESSION["test"])) {
             if (in_array($guess_letter, $_SESSION["baseChars"]) || in_array($guess_letter, $_SESSION["logicalChars"]) ) { // If the letter is a correct guess, update 'test' array.
                 updateArray($guess_letter);
@@ -101,7 +101,7 @@ function validateInputs()
 function validatePhrase() {
     if (isset($_GET['phrase-guess'])) {
         
-        $guess_phrase = strtoupper(trim($_GET['phrase-guess']));
+        $guess_phrase = trim($_GET['phrase-guess']);
         $logicalChars = getLogicalChars($guess_phrase);
 
         if ($_SESSION["logicalChars"] === $logicalChars) {
@@ -219,17 +219,18 @@ function setState()
 }
 
 // Resets the session variables.
-function resetGame($correctQuote)
+function resetGame()
 {
-    $_SESSION["baseChars"] = getBaseChars($correctQuote);
-    $_SESSION["logicalChars"] = getLogicalChars($correctQuote);
+    $_SESSION['quote'] = getQuote();
+    $_SESSION["baseChars"] = getBaseChars($_SESSION['quote']);
+    $_SESSION["logicalChars"] = getLogicalChars($_SESSION['quote']);
     $_SESSION["guesses"] = 0;
-    $_SESSION["quoteLength"] = getLength($correctQuote);
+    $_SESSION["quoteLength"] = getLength($_SESSION['quote']);
     $_SESSION["remainingChars"] = $_SESSION["quoteLength"];
     $_SESSION["quoteLength"] = $_SESSION["remainingChars"];
     $_SESSION["gameOver"] = false;
     $_SESSION["test"] = [];
-
+    
     // initialize and dynamically fill both arrays base on the quote length
     $_SESSION["fullMatch"] = array_fill(0, $_SESSION["quoteLength"], false);
     // $_SESSION["test"] = array_fill(0, $_SESSION["quoteLength"], "_");
@@ -247,6 +248,34 @@ function resetGame($correctQuote)
         }
     }
  
+}
+
+# connects to the mysql database
+function dbConnect(){
+    DEFINE('DB_SERVER', 'localhost');
+    DEFINE('DB_NAME', 'quotes_db');
+    DEFINE('DB_USER', 'root');
+    DEFINE('DB_PASS', '');
+    
+    $conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    return $conn;
+}
+
+# generates a new random quote from the mysql 'quote_db' database
+function getQuote(){
+    $conn = dbConnect();
+
+    $resultlog = mysqli_query($conn,"SELECT * FROM quote_table ORDER BY RAND() LIMIT 1;") or die(mysqli_error($conn));
+    while($row = mysqli_fetch_array($resultlog)){
+        $quote = $row['quote'];
+    }
+
+    return $quote;
 }
 
 echo $_SESSION["remainingChars"];
@@ -285,7 +314,7 @@ echo $_SESSION["remainingChars"];
 
             <?php
 
-            createInputs($correctQuote);
+            createInputs($_SESSION['start']);
 
             ?>
         </div>
@@ -319,7 +348,7 @@ echo $_SESSION["remainingChars"];
 
         <?php
         if (isset($_POST['button1'])) {
-            resetGame($correctQuote);
+            resetGame();
              header("Refresh:0; url=hangman.php");
         }
         ?>
