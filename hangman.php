@@ -1,41 +1,43 @@
 <?php
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 session_start();
-const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క", "Hi there", "మిమ్ములని కలసినందుకు సంతోషం", "For What its Worth", "నేను దుకాణానికి వెళ్తున్నాను");
-
-
-echo "QUOTE: " . $_SESSION['quote'] . "<br>";
-
+// const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క", "Hi there", "మిమ్ములని కలసినందుకు సంతోషం", "For What its Worth", "నేను దుకాణానికి వెళ్తున్నాను");
 
 if (empty($_SESSION["test"])) {
     resetGame();
 }
 
+// Testing only. Remove or comment out later
+echo "QUOTE: " . $_SESSION['quote'] . "<br>";
+// echo "Current Date: " . date("Y-m-d") . "<br>";
+// echo "Current Time: " . time() . "<br>";
+
+
 // Creates HTML for the buttons.
 function createButtons()
 {
-    $attributeLetter = "enabled";
-    $attributePhrase = "disabled";
+    $attribute_letter = "enabled";
+    $attribute_phrase = "disabled";
 
     if ($_SESSION["remainingChars"] == 0) {
-        $attributePhrase = "enabled";
-        $attributeLetter = "disabled";
+        $attribute_phrase = "enabled";
+        $attribute_letter = "disabled";
     }
 
     if ($_SESSION["gameOver"]) {
-        $attributePhrase = "disabled";
-        $attributeLetter = "disabled";
+        $attribute_phrase = "disabled";
+        $attribute_letter = "disabled";
     }
 
     echo "<label for='single-char-input'>Enter Letter </label>";
-    echo "<input type='text' name='letter-guess' id='single-char-input' maxlength ='1' $attributeLetter>";
-    echo "<input type='submit' value='Submit' $attributeLetter>";
+    echo "<input type='text' name='letter-guess' id='single-char-input' maxlength ='1' $attribute_letter>";
+    echo "<input type='submit' value='Submit' $attribute_letter>";
 
     echo "<br>";
     echo "<label for='single-char-input'>Guess the Phrase </label>";
-    echo "<input type='text' name='phrase-guess' id='phrase-input' $attributePhrase>";
+    echo "<input type='text' name='phrase-guess' id='phrase-input' $attribute_phrase>";
 
-    echo "<input type='submit' value='Submit' $attributePhrase>";
+    echo "<input type='submit' value='Submit' $attribute_phrase>";
 }
 
 // Creates HTML for the inputs.
@@ -102,9 +104,9 @@ function validatePhrase() {
     if (isset($_GET['phrase-guess'])) {
         
         $guess_phrase = trim($_GET['phrase-guess']);
-        $logicalChars = getLogicalChars($guess_phrase);
+        $logical_chars = getLogicalChars($guess_phrase);
 
-        if ($_SESSION["logicalChars"] === $logicalChars) {
+        if ($_SESSION["logicalChars"] === $logical_chars) {
             $_SESSION["test"] = $_SESSION["logicalChars"];
             $_SESSION["fullMatch"] = array_fill(0, $_SESSION["quoteLength"], true);
             $_SESSION["guesses"] = 7;
@@ -124,16 +126,16 @@ function getBaseChars($quote)
 
     for ($i = 0; $i < count($quote_array); $i++) {
         $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getBaseCharacters.php?input1=' . $quote_array[$i] . '&input2=English');
-        $sanitizedData = substr($data, stripos($data, "{"));
-        $decodedData = json_decode($sanitizedData);
-        var_dump($decodedData->data);
+        $sanitized_data = substr($data, stripos($data, "{"));
+        $decoded_data = json_decode($sanitized_data);
+        var_dump($decoded_data->data);
 
         if ($i == 0) { // Reassembles the quote with spaces.
-            $result = $decodedData->data;
+            $result = $decoded_data->data;
         }
         else {
             array_push($result, " ");
-            $result = array_merge($result, $decodedData->data);
+            $result = array_merge($result, $decoded_data->data);
         }
     }
     echo "<br>";
@@ -145,10 +147,10 @@ function getLogicalChars($quote)
 {
     $new_quote = str_replace(" ", "%20", $quote); // Converts spaces into a compatable charachter for the API.
     $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLogicalChars.php?string=' . $new_quote . '&language=English');
-    $sanitizedData = substr($data, stripos($data, "{"));
-    $decodedData = json_decode($sanitizedData);
+    $sanitized_data = substr($data, stripos($data, "{"));
+    $decoded_data = json_decode($sanitized_data);
     // var_dump($decodedData->data);
-    return $decodedData->data;
+    return $decoded_data->data;
 }
 
 // Use wpapi api to get the length of string
@@ -156,9 +158,9 @@ function getLength($quote)
 {
     $new_quote = str_replace(" ", "%20", $quote); // Converts spaces into a compatable charachter for the API.
     $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLength.php?input1=' . $new_quote . '&input2=English');
-    $santitizeData = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data);
-    $decodedData = json_decode($santitizeData);
-    return $decodedData->data;
+    $santitize_data = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data);
+    $decoded_data = json_decode($santitize_data);
+    return $decoded_data->data;
 }
 
 //Updates session array for instance of the guess letter
@@ -221,7 +223,13 @@ function setState()
 // Resets the session variables.
 function resetGame()
 {
-    $_SESSION['quote'] = getQuote();
+    // Temporary testing variables 
+    $testdate = "2022-10-17";
+    $testtime = "19:00:00";
+    $testdate2 = "2022-10-19";
+    $testtime2 = "02:00:00";
+
+    $_SESSION['quote'] = getQuote($testdate2, $testtime2);
     $_SESSION["baseChars"] = getBaseChars($_SESSION['quote']);
     $_SESSION["logicalChars"] = getLogicalChars($_SESSION['quote']);
     $_SESSION["guesses"] = 0;
@@ -266,17 +274,28 @@ function dbConnect(){
     return $conn;
 }
 
-# generates a new random quote from the mysql 'quote_db' database
-function getQuote(){
+# generates a quote based on date and time from the mysql 'quote_db' database
+# $date format: "YYYY-MM-DD"
+# $time format: "hh:mm:ss" 24-hour time
+function getQuote($date, $time){
+    // Evening quote
+    $active_quote = "20:00:00";
+
+    // Change to morning quote if current time is between 8:00:00am and 8:00:00pm
+    if ((strtotime($time) >= strtotime("08:00:00")) and ((strtotime($time) < strtotime("20:00:00")))) {
+        $active_quote = "08:00:00";
+    }
+
     $conn = dbConnect();
 
-    $resultlog = mysqli_query($conn,"SELECT * FROM quote_table ORDER BY RAND() LIMIT 1;") or die(mysqli_error($conn));
+    $resultlog = mysqli_query($conn,"SELECT * FROM quote_table WHERE quote_date = '$date' AND quote_time = '$active_quote'") or die(mysqli_error($conn));
     while($row = mysqli_fetch_array($resultlog)){
         $quote = $row['quote'];
     }
 
     return $quote;
 }
+
 
 echo $_SESSION["remainingChars"];
 
@@ -314,7 +333,7 @@ echo $_SESSION["remainingChars"];
 
             <?php
 
-            createInputs($_SESSION['start']);
+            createInputs();
 
             ?>
         </div>
