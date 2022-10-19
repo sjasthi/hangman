@@ -1,6 +1,11 @@
-<?php
+ <?php
+
+include('nav.php');
+ ?>
+ <?php
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 session_start();
+
 // const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క", "Hi there", "మిమ్ములని కలసినందుకు సంతోషం", "For What its Worth", "నేను దుకాణానికి వెళ్తున్నాను");
 
 if (empty($_SESSION["test"])) {
@@ -8,7 +13,7 @@ if (empty($_SESSION["test"])) {
 }
 
 // Testing only. Remove or comment out later
-echo "QUOTE: " . $_SESSION['quote'] . "<br>";
+
 // echo "Current Date: " . date("Y-m-d") . "<br>";
 // echo "Current Time: " . time() . "<br>";
 
@@ -48,7 +53,7 @@ function createInputs()
     $quote_length = getLength($_SESSION['quote']);
     echo "quote length: ";
     echo $quote_length;
-    echo "<ul>";
+    echo "<ul class='input-list'>";
     for ($i = 0; $i <  $quote_length;  $i++) {
         #echo "<span>" . "&nbsp;&nbsp" .$_SESSION["test"][$i] . "</span>";
 
@@ -310,11 +315,15 @@ echo $_SESSION["remainingChars"];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hangman Game</title>
     <link rel="stylesheet" href="./css/hangman_style.css" />
+ 
+
 </head>
 
 <body>
 
+<?php
 
+?>
 
     <div class="container">
 
@@ -378,4 +387,4 @@ echo $_SESSION["remainingChars"];
 
 </body>
 
-</html>
+</html> 

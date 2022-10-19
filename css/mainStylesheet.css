@@ -9,16 +9,16 @@ nav {
     margin-left: 100px;
 }
 
-nav ul {
+nav ul.nav-list {
     display: flex;
     gap: 40px;
     list-style: none;
     align-items: center;
     padding: 10px;
-    margin-left: 120px;
+    margin-left: 60px;
 }
 
-ul li {
+.nav-list  li {
     text-align: center;
 }
 
@@ -58,3 +58,6 @@ nav a {
     justify-content: center;
     align-items: center;
  }
+
+
+ 

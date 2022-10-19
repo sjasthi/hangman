@@ -14,7 +14,7 @@
 
     <nav>
 
-        <ul>
+        <ul class="nav-list">
             <a href="index.php">
                 <li class="logo">
                     <img src="./images/app_logo.png" alt="">
@@ -46,10 +46,7 @@
         </ul>
     </nav>
 
-    <div class='play-btn'>
-    <a class="btn" href="hangman.php">Start game</a>
-
-    </div>
+   
 
 </body>
 

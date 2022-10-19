@@ -42,11 +42,9 @@ span {
     background-color: yellow;
 }
 
-.spaceChar{
-    border: solid 0px #888;
-}
 
-li {
+
+.input-list li {
     display: inline-block;
     width: 50px;
     height: 50px;
@@ -54,8 +52,11 @@ li {
     border: solid 1px #888;
     font-size: 2.5em
 }
-li a {
+.input-list li a {
     display: block;
     margin-top: 3px;
 }
 
+.input-list li.spaceChar{
+    border: solid 0px #888;
+}
