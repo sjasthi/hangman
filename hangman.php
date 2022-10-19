@@ -4,6 +4,7 @@ include('nav.php');
  ?>
  <?php
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+date_default_timezone_set('America/Chicago');
 session_start();
 
 // const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క", "Hi there", "మిమ్ములని కలసినందుకు సంతోషం", "For What its Worth", "నేను దుకాణానికి వెళ్తున్నాను");
@@ -13,9 +14,11 @@ if (empty($_SESSION["test"])) {
 }
 
 // Testing only. Remove or comment out later
-
-// echo "Current Date: " . date("Y-m-d") . "<br>";
-// echo "Current Time: " . time() . "<br>";
+echo "QUOTE: " . $_SESSION['quote'] . "<br>";
+$current_day = date("Y-m-d");
+// echo "Current Date: " . $current_day . "<br>";
+// echo "Yesterday: " . date("Y-m-d", strtotime('-1 day', strtotime($current_day))) . "<br>";
+// echo "Current Time: " . date("H:i:s") . "<br>";
 
 
 // Creates HTML for the buttons.
@@ -133,7 +136,7 @@ function getBaseChars($quote)
         $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getBaseCharacters.php?input1=' . $quote_array[$i] . '&input2=English');
         $sanitized_data = substr($data, stripos($data, "{"));
         $decoded_data = json_decode($sanitized_data);
-        var_dump($decoded_data->data);
+        // var_dump($decoded_data->data);
 
         if ($i == 0) { // Reassembles the quote with spaces.
             $result = $decoded_data->data;
@@ -229,12 +232,21 @@ function setState()
 function resetGame()
 {
     // Temporary testing variables 
-    $testdate = "2022-10-17";
-    $testtime = "19:00:00";
-    $testdate2 = "2022-10-19";
-    $testtime2 = "02:00:00";
+    $testdate = "2022-10-18";
+    $testtime = "07:00:00";
+    $testtime2 = "08:00:00";
+    $testtime3 = "20:00:00";
 
-    $_SESSION['quote'] = getQuote($testdate2, $testtime2);
+    // $_SESSION['quote'] = getQuote($testdate, $testtime);
+    // $_SESSION['quote'] = getQuote($testdate, $testtime2);
+    // $_SESSION['quote'] = getQuote($testdate, $testtime3);
+
+
+
+    $current_date = date("Y-m-d");
+    $current_time = date("H:i:s");
+
+    $_SESSION['quote'] = getQuote($current_date, $current_time);
     $_SESSION["baseChars"] = getBaseChars($_SESSION['quote']);
     $_SESSION["logicalChars"] = getLogicalChars($_SESSION['quote']);
     $_SESSION["guesses"] = 0;
@@ -283,17 +295,18 @@ function dbConnect(){
 # $date format: "YYYY-MM-DD"
 # $time format: "hh:mm:ss" 24-hour time
 function getQuote($date, $time){
-    // Evening quote
-    $active_quote = "20:00:00";
+    $active_date = $date;
+    $active_time = "20:00:00";
 
-    // Change to morning quote if current time is between 8:00:00am and 8:00:00pm
-    if ((strtotime($time) >= strtotime("08:00:00")) and ((strtotime($time) < strtotime("20:00:00")))) {
-        $active_quote = "08:00:00";
+    if ((strtotime($time) < strtotime("08:00:00"))) {
+        $active_date = date("Y-m-d", strtotime('-1 day', strtotime($date)));
+    } elseif ((strtotime($time) >= strtotime("08:00:00")) and ((strtotime($time) < strtotime("20:00:00")))) {
+        $active_time = "08:00:00";
     }
 
     $conn = dbConnect();
 
-    $resultlog = mysqli_query($conn,"SELECT * FROM quote_table WHERE quote_date = '$date' AND quote_time = '$active_quote'") or die(mysqli_error($conn));
+    $resultlog = mysqli_query($conn,"SELECT * FROM quote_table WHERE quote_date = '$active_date' AND quote_time = '$active_time'") or die(mysqli_error($conn));
     while($row = mysqli_fetch_array($resultlog)){
         $quote = $row['quote'];
     }
