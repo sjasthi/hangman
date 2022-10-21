@@ -1,7 +1,7 @@
- <?php
-
+<?php
 include('nav.php');
  ?>
+ 
  <?php
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 date_default_timezone_set('America/Chicago');
@@ -38,7 +38,7 @@ function createButtons()
     }
 
     echo "<label for='single-char-input'>Enter Letter </label>";
-    echo "<input type='text' name='letter-guess' id='single-char-input' maxlength ='1' $attribute_letter>";
+    echo "<input type='text' name='letter-guess' id='single-char-input' maxlength ='4' $attribute_letter>";
     echo "<input type='submit' value='Submit' $attribute_letter>";
 
     echo "<br>";
