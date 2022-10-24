@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,6 +18,28 @@
 
 <body>
 
+
+  <?php
+
+  function showWinPercentage()
+  {
+
+    if (isset($_COOKIE["numberOfGamesPlayed"]) && isset($_COOKIE["numberOfGamesWon"])  && isset($_COOKIE["winPercentage"])) {
+      if ($_COOKIE["numberOfGamesPlayed"] > 0) {
+        echo number_format(($_COOKIE["numberOfGamesWon"] / $_COOKIE["numberOfGamesPlayed"]) * 100);
+      } else {
+        echo 0;
+      }
+    } else {
+      echo 0;
+    }
+  }
+
+
+
+
+
+  ?>
 
 
   <div class="stats">
@@ -45,13 +71,17 @@
       <ul>
 
         <li>
-          <h3>0</h3>
+          <h3><?php if (isset($_COOKIE["numberOfGamesPlayed"])) {
+                echo $_COOKIE["numberOfGamesPlayed"];
+              } else echo 0 ?></h3>
           <h4>Played</h4>
 
         </li>
 
         <li>
-          <h3>0</h3>
+          <h3><?php if (isset($_COOKIE["numberOfGamesWon"])) {
+                echo $_COOKIE["numberOfGamesWon"];
+              } else echo 0 ?></h3>
 
           <h4>Won</h4>
 
@@ -59,7 +89,7 @@
 
 
         <li>
-          <h3>0</h3>
+          <h3><?php showWinPercentage(); ?></h3>
 
           <h4>Win %</h4>
 
@@ -67,7 +97,9 @@
 
 
         <li>
-          <h3>0</h3>
+          <h3><?php if (isset($_COOKIE["currentWinStreak"])) {
+                echo $_COOKIE["currentWinStreak"];
+              } else echo 0 ?></h3>
 
           <h4>Current Streak</h4>
 
@@ -75,7 +107,9 @@
 
 
         <li>
-          <h3>0</h3>
+          <h3><?php if (isset($_COOKIE["maxWinStreak"])) {
+            echo $_COOKIE["maxWinStreak"];
+              } else echo 0 ?></h3>
 
           <h4>Max Streak</h4>
 

@@ -7,9 +7,13 @@ define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 date_default_timezone_set('America/Chicago');
 session_start();
 
+// set cookie
+
+
 // const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క", "Hi there", "మిమ్ములని కలసినందుకు సంతోషం", "For What its Worth", "నేను దుకాణానికి వెళ్తున్నాను");
 
 if (empty($_SESSION["test"])) {
+    setInitialCookies();
     resetGame();
 }
 
@@ -20,6 +24,16 @@ $current_day = date("Y-m-d");
 // echo "Yesterday: " . date("Y-m-d", strtotime('-1 day', strtotime($current_day))) . "<br>";
 // echo "Current Time: " . date("H:i:s") . "<br>";
 
+
+// set the initial cookies to zero
+
+function setInitialCookies(){
+    setcookie("numberOfGamesPlayed", 0, time()+3600);
+    setcookie("numberOfGamesWon", 0, time()+3600);
+    setcookie("winPercentage", 0, time()+3600);
+    setcookie("currentWinStreak", 0, time()+3600);
+    setcookie("maxWinStreak", 0, time()+3600);
+}
 
 // Creates HTML for the buttons.
 function createButtons()
@@ -33,9 +47,11 @@ function createButtons()
     }
 
     if ($_SESSION["gameOver"]) {
+       
         $attribute_phrase = "disabled";
         $attribute_letter = "disabled";
     }
+   
 
     echo "<label for='single-char-input'>Enter Letter </label>";
     echo "<input type='text' name='letter-guess' id='single-char-input' maxlength ='4' $attribute_letter>";
@@ -54,8 +70,6 @@ function createInputs()
 //var_dump($_SESSION["fullMatch"]); // remove this to fix ui
 
     $quote_length = getLength($_SESSION['quote']);
-    echo "quote length: ";
-    echo $quote_length;
     echo "<ul class='input-list'>";
     for ($i = 0; $i <  $quote_length;  $i++) {
         #echo "<span>" . "&nbsp;&nbsp" .$_SESSION["test"][$i] . "</span>";
@@ -101,6 +115,7 @@ function validateInputs()
                 $_SESSION["guesses"] = $_SESSION["guesses"] + 1; // If the letter is incorrect, add one to guesses.
                 if ($_SESSION["guesses"] >= 6) {
                     $_SESSION["gameOver"] = true;
+                
                 }
             }
         }
@@ -119,9 +134,24 @@ function validatePhrase() {
             $_SESSION["fullMatch"] = array_fill(0, $_SESSION["quoteLength"], true);
             $_SESSION["guesses"] = 7;
             $_SESSION["gameOver"] = true;
+            setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
+            setcookie("numberOfGamesWon", $_COOKIE["numberOfGamesWon"] + 1 , time()+3600);
+            setcookie("currentWinStreak", $_COOKIE["currentWinStreak"] + 1 , time()+3600);
+
+
+                // set max winstreak
+
+                if($_COOKIE["maxWinStreak"] < $_COOKIE["currentWinStreak"]){
+                    setcookie("maxWinStreak", $_COOKIE["currentWinStreak"], time()+3600);
+                }
+
         } else {
             $_SESSION["guesses"] = 6;
             $_SESSION["gameOver"] = true;
+            setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
+            setcookie("currentWinStreak", 0 , time()+3600);
+
+        
         }
     }
 }
@@ -272,6 +302,11 @@ function resetGame()
             array_push($_SESSION["test"], "_");
         }
     }
+
+    // set cookies to zero
+
+
+   
  
 }
 
