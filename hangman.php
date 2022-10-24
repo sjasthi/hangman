@@ -1,7 +1,7 @@
 <?php
-include('nav.php');
- ?>
- 
+include("stats.php");
+?>
+
  <?php
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 date_default_timezone_set('America/Chicago');
@@ -328,15 +328,13 @@ echo $_SESSION["remainingChars"];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hangman Game</title>
     <link rel="stylesheet" href="./css/hangman_style.css" />
- 
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 
 </head>
 
 <body>
 
-<?php
-
-?>
+ 
 
     <div class="container">
 
