@@ -144,21 +144,24 @@ function validatePhrase() {
         
         $guess_phrase = trim($_GET['phrase-guess']);
         $logical_chars = getLogicalChars($guess_phrase);
+        $currentWinStreak = 0;
 
         if ($_SESSION["logicalChars"] === $logical_chars) {
             $_SESSION["test"] = $_SESSION["logicalChars"];
             $_SESSION["fullMatch"] = array_fill(0, $_SESSION["quoteLength"], true);
             $_SESSION["guesses"] = 7;
             $_SESSION["gameOver"] = true;
-            setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
+            
+            $currentWinStreak = $_COOKIE["numberOfGamesPlayed"] + 1;
+            setcookie("numberOfGamesPlayed", $currentWinStreak , time()+3600);
             setcookie("numberOfGamesWon", $_COOKIE["numberOfGamesWon"] + 1 , time()+3600);
             setcookie("currentWinStreak", $_COOKIE["currentWinStreak"] + 1 , time()+3600);
 
 
                 // set max winstreak
-
-                if($_COOKIE["maxWinStreak"] < $_COOKIE["currentWinStreak"]){
-                    setcookie("maxWinStreak", $_COOKIE["currentWinStreak"], time()+3600);
+                
+                if($_COOKIE["maxWinStreak"] <= $currentWinStreak){
+                    setcookie("maxWinStreak", $currentWinStreak, time()+3600);
                 }
 
         } else {

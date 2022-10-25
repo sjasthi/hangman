@@ -20,7 +20,7 @@
   function showWinPercentage()
   {
 
-    if (isset($_COOKIE["numberOfGamesPlayed"]) && isset($_COOKIE["numberOfGamesWon"])  && isset($_COOKIE["winPercentage"])) {
+    if (isset($_COOKIE["numberOfGamesPlayed"]) && isset($_COOKIE["numberOfGamesWon"])) {
       if ($_COOKIE["numberOfGamesPlayed"] > 0) {
         echo number_format(($_COOKIE["numberOfGamesWon"] / $_COOKIE["numberOfGamesPlayed"]) * 100);
       } else {
