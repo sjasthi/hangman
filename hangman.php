@@ -45,7 +45,6 @@ $current_day = date("Y-m-d");
 function setInitialCookies(){
     setcookie("numberOfGamesPlayed", 0, time()+3600);
     setcookie("numberOfGamesWon", 0, time()+3600);
-    setcookie("winPercentage", 0, time()+3600);
     setcookie("currentWinStreak", 0, time()+3600);
     setcookie("maxWinStreak", 0, time()+3600);
 }
