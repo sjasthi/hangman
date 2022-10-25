@@ -7,14 +7,29 @@ define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 date_default_timezone_set('America/Chicago');
 session_start();
 
-// set cookie
-
+// Check if the reset button was pressed.
+if (isset($_POST['button1'])) {
+    resetGame();
+    header("Location: hangman.php");
+    return;
+}
 
 // const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క", "Hi there", "మిమ్ములని కలసినందుకు సంతోషం", "For What its Worth", "నేను దుకాణానికి వెళ్తున్నాను");
+
+// set cookie
 
 if (empty($_SESSION["test"])) {
     setInitialCookies();
     resetGame();
+}
+
+setState();
+
+// Bandaid fix so cookies immediately update when a gameover happens.
+if ($_SESSION["gameOver"] == true && $_SESSION["flag"] == true) {
+    $_SESSION["flag"] = false;
+    header("Location: hangman.php");
+    return;
 }
 
 // Testing only. Remove or comment out later
@@ -115,7 +130,9 @@ function validateInputs()
                 $_SESSION["guesses"] = $_SESSION["guesses"] + 1; // If the letter is incorrect, add one to guesses.
                 if ($_SESSION["guesses"] >= 6) {
                     $_SESSION["gameOver"] = true;
-                
+
+                    setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
+                    setcookie("currentWinStreak", 0 , time()+3600);
                 }
             }
         }
@@ -209,11 +226,14 @@ function updateArray($letter)
 
         // set full match to true if logical characters match
         if (strcmp($letter, $_SESSION["logicalChars"][$index]) == 0) {
-            $_SESSION["test"][$index] = $letter;
+            if ($_SESSION["test"][$index] == "_") {
+                $_SESSION["remainingChars"]--;
+            }
             $_SESSION["fullMatch"][$index] = true;
-            $_SESSION["remainingChars"]--;
+            $_SESSION["test"][$index] = $letter;
+            
         }
-        else if (strcmp($letter, $_SESSION["baseChars"][$index]) == 0) {
+        else if (strcmp($letter, $_SESSION["baseChars"][$index]) == 0 && $_SESSION["test"][$index] == "_") {
             $_SESSION["test"][$index] = $letter;
             $_SESSION["remainingChars"]--;
         }
@@ -225,8 +245,12 @@ function setState()
 {
 
     validateInputs();
-    validatePhrase();
+    validatePhrase();  
+}
 
+// HTML to set the hangman image.
+function setImage()
+{
     switch ($_SESSION["guesses"]) { // Checks how many bad guesses have been made and sets the image.
         case 0:
             echo "./css/images/gallow0.png";
@@ -284,6 +308,7 @@ function resetGame()
     $_SESSION["remainingChars"] = $_SESSION["quoteLength"];
     $_SESSION["quoteLength"] = $_SESSION["remainingChars"];
     $_SESSION["gameOver"] = false;
+    $_SESSION["flag"] = true;
     $_SESSION["test"] = [];
     
     // initialize and dynamically fill both arrays base on the quote length
@@ -377,7 +402,7 @@ echo $_SESSION["remainingChars"];
         <div class="hangman-container">
 
             <div>
-                <img src="<?php setState() ?>" alt="Hangman full">
+                <img src="<?php setImage() ?>" alt="Hangman full">
             </div>
 
         </div>
@@ -420,12 +445,7 @@ echo $_SESSION["remainingChars"];
             <input type="submit" name="button1" value="reset session" />
         </form>
 
-        <?php
-        if (isset($_POST['button1'])) {
-            resetGame();
-             header("Refresh:0; url=hangman.php");
-        }
-        ?>
+        
         <!--- end of temporary section --->
 
     </div>
