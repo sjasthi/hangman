@@ -43,6 +43,15 @@
 
             </a>
 
+            <a href="phrases.php">
+                <li>
+                    <img src="./images/login.png" alt="">
+                    <br>
+                    Phrases
+                </li>
+
+            </a>
+
         </ul>
     </nav>
 
