@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.0.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 15, 2020 at 11:20 PM
--- Server version: 10.3.16-MariaDB
--- PHP Version: 7.3.7
+-- Generation Time: Oct 26, 2022 at 02:04 AM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -82,8 +81,8 @@ CREATE TABLE `quote_table` (
   `author` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `topic` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `quote` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `quote_date` date COLLATE utf8mb4_unicode_ci NOT NULL,
-  `quote_time` time COLLATE utf8mb4_unicode_ci NOT NULL
+  `quote_date` date NOT NULL,
+  `quote_time` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -91,13 +90,20 @@ CREATE TABLE `quote_table` (
 --
 
 INSERT INTO `quote_table` (`id`, `author`, `topic`, `quote`, `quote_date`, `quote_time`) VALUES
-
-(1, 'ics499', 'slider', 'web app development is fun', '2022-10-17', '08:00:00'),
-(2, 'mario', 'demo', 'everything is good', '2022-10-17', '20:00:00'),
-(3, 'testing', 'testing', 'programming in php is fun', '2022-10-18', '08:00:00'),
-(4, 'test', 'test', 'test', '2022-10-18', '20:00:00'),
-(5, 'junk2', 'junk', 'junk', '2022-10-19', '08:00:00'),
-(6, 'junk2', 'junk', 'sample quote', '2022-10-19', '20:00:00');
+(280, 'Soldier', 'Migrating Coconuts', 'Are you suggesting coconuts migrate', '2022-10-20', '08:00:00'),
+(281, 'సైనికుడు', 'వలస కొబ్బరికాయలు', 'కొబ్బరికాయలు వలస వెళ్లాలని మీరు సూచిస్తున్నారా', '2022-10-20', '20:00:00'),
+(282, 'null', 'null', 'test no author or topic', '2022-10-21', '08:00:00'),
+(283, 'null', 'null', 'null', '2022-10-21', '20:00:00'),
+(286, 'test name', 'test topic', 'test phrase for testing purposes', '2022-10-22', '08:00:00'),
+(287, 'a', 'a', 'a', '2022-10-22', '20:00:00'),
+(288, 'sdfsf', 'sfsf', 'sfsf', '2022-10-23', '08:00:00'),
+(289, 'ics499', 'slider', 'web app development is fun', '2022-10-23', '20:00:00'),
+(290, 'mario', 'demo', 'everything is good', '2022-10-24', '08:00:00'),
+(291, 'testing', 'testing', 'programming in php is fun', '2022-10-24', '20:00:00'),
+(292, 'రచయిత', 'అంశం', 'నమూనా పదబంధం', '2022-10-25', '08:00:00'),
+(293, 'author1', 'topic2', 'test phrase', '2022-10-25', '20:00:00'),
+(294, 'యాదృచ్ఛిక వ్యక్తి', 'జంతువు', 'ఏనుగు', '2022-10-26', '08:00:00'),
+(295, 'యాదృచ్ఛిక వ్యక్తి', 'జంతువు', 'బ్లాక్ పాంథర్', '2022-10-26', '20:00:00');
 
 --
 -- Indexes for dumped tables
@@ -123,7 +129,7 @@ ALTER TABLE `quote_table`
 -- AUTO_INCREMENT for table `quote_table`
 --
 ALTER TABLE `quote_table`
-  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=277;
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=296;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
