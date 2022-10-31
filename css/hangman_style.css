@@ -20,12 +20,6 @@ body {
   margin: 10px 6px;
 }
 
-span {
-  font-size: 30px;
-  margin-right: 5px;
-  align-items: center;
-}
-
 .stats-container {
   width: 400px;
   display: flex;
@@ -58,230 +52,107 @@ span {
 }
 
 /*  phrases.php  */
-.button-div{
-  display: flex;
-  justify-content: space-between;
-  padding: 5px;
-  }
-  
-  .add-phrase-button{
-      height: 40px;
-      width: 120px;
-      border-radius: 5px;
-      background-color:aliceblue;
-      font-size: medium;
-  }
-  .add-phrase-button:hover{
-  background-color: rgb(211, 234, 255);
-  }
-  
-  .modify-phrase-button{
-      height: 40px;
-      width: 120px;
-      border-radius: 5px;
-      background-color:aliceblue;
-      font-size: medium;
-  }
-  
-  a{
-      text-decoration: none;
-      color: black;
-  }
-  
-  table{
-      table-layout:fixed;
-      width:98%;
-      border: solid 3px black;
-      border-radius: 25px;
-      background-color: lightgrey;
-  }
-  
-  tr{
-      text-align: center;
-  } 
-  
-  td{
-      padding-bottom: 1%;
-  }
-  th{
-      padding-bottom: 2%;
-  }
-  .phrase_table{
-      margin-left: auto;
-      margin-right: auto;
-  }
-  .table_title{
-      font-size: 30px;
-  }
-  
-  .table_data{
-      font-size: 20px;
-  }
-  
-  select{
-      padding: 5px;
-      display: inline-block;
-  }
-  
-  .page_link_button{
-      font-size: 25px;
-      display: inline-block;
-      width: 4%;
-      text-align: center;
-      border: solid 1px #888;
-      border-radius: 10%;
-      justify-content: center;
-      text-decoration: none;
-      color: black;
-      padding: .5%;
-  }
-  .page_link_button:hover{
-  background-color: rgb(187, 187, 187);
-  }
-  
-  .page_link_div{
-      display: block;
-      margin-right: 0;
-      margin-left: auto;
-      text-align: right;    
-  }
-  
-  .dots{
-      display: inline-flex;
-      font-size: 40px;
-  }
-  
-  /*  Add phrase  */
-  
-  .form_title{
-      margin: .5%;
-  }
-  .name_input{
-      margin: .5%;
-  }
-  .topic_input{
-      margin: .5%;
-  }
-  .phrase-input{
-      margin: .5%;
-  }
-  .submit-button{
-      margin: .5%;
-  }
-  .phrase_form{
-      padding-top: 25vh;
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
-      vertical-align: center;
-      text-align: center;
-      font-family: 'Zen Kurenaido', sans-serif;
-      font-weight: 400;
-  
-  }
-  .add_phrase_button{
-      display:inline-block;
-      padding:0.3em 1.2em;
-      margin:0 0.3em 0.3em 0;
-      border-radius:2em;
-      box-sizing: border-box;
-      text-decoration:none;
-      font-family: 'Zen Kurenaido', sans-serif;
-      font-weight:400;
-      color:black;
-      background-color: lightgreen;
-      text-align:center;
-  
-  }
-  
-  [name="removeQuote"]{
-  background-color:lightcoral;
-  border-radius: 2em;
+.add_phrase_button{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 40px;
+  width: 130px;
+  border-radius: 5px;
+  background-color:aliceblue;
+  font-size: medium;
+  cursor: pointer;
+}
+.add_phrase_button:hover{
+background-color: lightgreen;
+}
+
+.addEntryForm, .editEntryForm{
+  display: none;
+  width: 300px;
+  height: 450px;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  background-color: white;
+  border: solid 2px lightslategray; 
+  text-align: center;
+  z-index: 100;
+  border-radius: 10px;
+}
+
+.formTitle{
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.name_input, .topic_input, .phrase_input, .date_input, .time_input{
+  margin: 20px;
+}
+
+.add_name_input, .add_topic_input, .add_phrase_input, .add_date_input{
+height: 30px;
+border: solid 1px black; 
+font-size: 15px;
+}
+
+.required{
+  display: inline;
+  color: red;
+  font-size: 20px;
+}
+
+.add_entry_button, .edit_entry_button{
+  width: 150px;
+  height: 40px;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  background-color: lightgreen;
+  font-size: 20px;
+}
+
+.dim{
+  display: none;
+  z-index: 99;
+  background: #000;
+  opacity: 0.5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.closeFormButton{
+  display: inline-block;
+  font-size: 40px;
   font-weight: 600;
-  }
-  
-  [name="removeQuote"]:hover{
-      background-color:red;
-  }
-  
-  [name="removeMsg"]{
+  margin-left: 82%;
+  background: none;
+  border: none;
+  transform: rotate(45deg);
+  cursor: pointer;
+}
+.delete_icon, .edit_icon {
+  width:50%;
+  height: 50%;
+}
+
+.delete_entry, .edit_entry {
+  border: none;
+  background-color: white;
+  cursor: pointer;
+}
+
+.notification_message {
   text-align: center;
   color: red;
-  font-weight: 700;
-  font-size: medium;
-  }
-  
-    
-    .dim{
-      display: none;
-      z-index: 99;
-      background: #000;
-      opacity: 0.5;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-  
-  .updateForm{
-      display: none;
-      width: 300px;
-      height: 400px;
-      top: 50%;
-      left: 50%;
-      margin-right: -50%;
-      transform: translate(-50%, -50%);
-      position: fixed;
-      background-color: white;
-      text-align: center;
-      z-index: 100;
-  }
-  .formTitle{
-      text-align: center;
-      margin-top: 0;
-      margin-bottom: 20px;
-  }
-  .closeFormButton{
-      display: inline-block;
-      font-size: 45px;
-      font-weight: 600;
-      margin-left: 80%;
-      background: none;
-      border: none;
-      transform: rotate(45deg);
-  }
-  
-  .update_phrase_button, .update_author_button, .update_topic_button{
-      margin-top: 5px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      background-color: lightgreen;
-  }
-  
-  .update_name_input, .update_topic_input, .update_phrase_input{
-      margin-left: 5px;
-      margin-right: 5px;
-      border: solid 1px black;
-  
-  }
-  
-  [name="editQuote"]{
-      background-color:lightgreen;
-      border-radius: 2em;
-      font-weight: 600;
-      }
-      
-  [name="editQuote"]:hover{
-      background-color:green;
-  }
-  
-  [name="updateMsg"]{
-      text-align: center;
-      color: red;
-      font-weight: 700;
-      font-size: medium;
-      }
+  font-weight: 900;
+}
+/* end of phrases.php */
 
 .stats {
   display: flex;
