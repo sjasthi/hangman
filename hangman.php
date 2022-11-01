@@ -1,11 +1,18 @@
 <?php
 include("stats.php");
+include("db_credentials.php");
 ?>
 
  <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 date_default_timezone_set('America/Chicago');
-session_start();
+
+if (!isset($_SESSION['loggedIn'])) {
+    $_SESSION['loggedIn'] = false;
+}
 
 // Check if the reset button was pressed.
 if (isset($_POST['button1'])) {
@@ -335,22 +342,6 @@ function resetGame()
 
    
  
-}
-
-# connects to the mysql database
-function dbConnect(){
-    DEFINE('DB_SERVER', 'localhost');
-    DEFINE('DB_NAME', 'quotes_db');
-    DEFINE('DB_USER', 'root');
-    DEFINE('DB_PASS', '');
-    
-    $conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    return $conn;
 }
 
 # generates a quote based on date and time from the mysql 'quote_db' database
