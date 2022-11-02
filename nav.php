@@ -1,3 +1,12 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+function isLoggedIn() {
+    return $_SESSION['loggedIn'];
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,14 +43,29 @@
 
             </a>
 
-            <a href="index.php">
+            <?php
+            if (!isLoggedIn()) {
+            ?>
+            <a href="login.php">
                 <li>
                     <img src="./images/login.png" alt="">
                     <br>
                     Login
                 </li>
-
             </a>
+            <?php
+            } else {
+            ?>
+            <a href="logout.php">
+                <li>
+                    <img src="./images/login.png" alt="">
+                    <br>
+                    Logout
+                </li>
+            </a>
+
+            <?php } ?>
+
 
             <a href="phrases.php">
                 <li>

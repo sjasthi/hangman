@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2022 at 02:04 AM
+-- Generation Time: Nov 02, 2022 at 12:31 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -103,7 +103,35 @@ INSERT INTO `quote_table` (`id`, `author`, `topic`, `quote`, `quote_date`, `quot
 (292, 'రచయిత', 'అంశం', 'నమూనా పదబంధం', '2022-10-25', '08:00:00'),
 (293, 'author1', 'topic2', 'test phrase', '2022-10-25', '20:00:00'),
 (294, 'యాదృచ్ఛిక వ్యక్తి', 'జంతువు', 'ఏనుగు', '2022-10-26', '08:00:00'),
-(295, 'యాదృచ్ఛిక వ్యక్తి', 'జంతువు', 'బ్లాక్ పాంథర్', '2022-10-26', '20:00:00');
+(295, 'యాదృచ్ఛిక వ్యక్తి', 'జంతువు', 'బ్లాక్ పాంథర్', '2022-10-26', '20:00:00'),
+(297, 'Author', 'topic', 'stand and deliver', '2022-11-01', '08:00:00'),
+(298, 'a', 'b', 'stay clear', '2022-11-01', '20:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_info`
+--
+
+CREATE TABLE `user_info` (
+  `user_id` int(11) NOT NULL,
+  `user_first_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_last_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_email` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_role` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `user_info`
+--
+
+INSERT INTO `user_info` (`user_id`, `user_first_name`, `user_last_name`, `user_email`, `user_password`, `user_role`) VALUES
+(100, 'Austin', 'Wang', 'austin.wang@my.metrostate.edu', 'password1', 'admin'),
+(101, 'Bruce', 'Sherrill', 'bruce.sherrill@my.metrostate.edu', 'password', 'admin'),
+(102, 'Ismail', 'Kassim', 'ismail.kassim@my.metrostate.edu', 'password', 'admin'),
+(103, 'Jacob', 'Berge', 'jacob.berge@my.metrostate.edu', 'password', 'admin'),
+(104, 'John', 'Smith', 'john.smith@gmail.com', 'password2', 'client');
 
 --
 -- Indexes for dumped tables
@@ -122,6 +150,12 @@ ALTER TABLE `quote_table`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `user_info`
+--
+ALTER TABLE `user_info`
+  ADD PRIMARY KEY (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -129,7 +163,13 @@ ALTER TABLE `quote_table`
 -- AUTO_INCREMENT for table `quote_table`
 --
 ALTER TABLE `quote_table`
-  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=296;
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=299;
+
+--
+-- AUTO_INCREMENT for table `user_info`
+--
+ALTER TABLE `user_info`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,26 +1,9 @@
 
  <?php
-    
+    // header
     include('nav.php');
 
-    // if page is set set the page to the value
-    // keeps track of the page the user is on
-    if (isset($_GET["page"])){
-        $current_page = $_GET["page"];
-    }
-    else{
-        $current_page = 1;
-    }
-
-    // if per_page is set set to the value
-    // keeps track of how many rows per page the user wants
-    if (isset($_GET["per_page"])){
-        $rows_per_page = $_GET["per_page"];
-    }
-    else{
-        $rows_per_page = 5;
-    }
-
+    // db credentials
     DEFINE('DB_SERVER', 'localhost');
     DEFINE('DB_NAME', 'quotes_db');
     DEFINE('DB_USER', 'root');
@@ -32,74 +15,168 @@
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
+  
+    // select max date then select max time from the max dates
+    $sql = "SELECT id, quote_date, MAX(quote_time) as quote_time 
+        FROM quote_table WHERE quote_date = (
+        SELECT MAX(quote_date) FROM quote_table 
+        )";
 
-    // if removeQuote is set remove the selected quote
-    if(isset($_POST['removeQuote'])){
-        $removeId = $_POST['removeQuote'];
+    //run the sql query
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
 
-        $sql = "DELETE FROM quote_table WHERE id = $removeId";
+    $quote_date = $row[ 'quote_date'];
+    $quote_time = $row['quote_time'];
 
-        //outputs text if record is removed
-        if ($conn->query($sql) === TRUE){
-            echo "<p name=removeMsg>Phrase id:". $removeId ." removed from database<p>";
-        }
-        else{
-            echo "error: " . $sql . "<br>" . $conn->error;
-        }
+    // if time is 8am, keep the date the same as the max entry and add 12 hours to the time
+    if ($quote_time == "08:00:00"){
+        $new_date = $quote_date;
+        $new_time = "20:00:00";
+    }
+
+    // if the time is 8pm add 1 day to the date and set the time as 8am
+    if ($quote_time == "20:00:00"){
+        $time_added = strtotime($quote_date) + (3600*36);
+        $new_date = date("Y-m-d", $time_added);
+        $new_time = "08:00:00";
     }    
+
+    // if add phrase is set, attempt to add new phrase
+    if (isset($_POST["addName"])){
+
+        // set variables to post values
+        $name = $_POST["addName"];
+        $topic = $_POST["addTopic"];
+        $phrase = $_POST["addPhrase"];
+        if (isset($_POST["addDate"])){      
+            $date = $_POST["addDate"];
+        }
+        if (isset($_POST["addTime"])){      
+            $time = $_POST["addTime"];
+        }   
+
+        // if date and time are set
+        if ($date != '' && isset($_POST["addTime"])){    
+
+            // convert time to proper format
+            if ($time == "morning"){
+                $time = "08:00:00";
+            }
+            if ($time == "evening"){
+                $time = "20:00:00";
+            }
+
+            // check to see if date/time combo exists already in db
+            $sql="SELECT 1
+                FROM quote_table
+                WHERE quote_date='$date' AND quote_time='$time'";
+
+            $result = mysqli_query($conn, $sql);
+
+            // if date/time combo are unique, add the entry to the db
+            if($result !== false && $result->num_rows == 0){
+
+                $sql = "INSERT INTO quote_table
+                (author, topic, quote, quote_date, quote_time)
+                VALUES ('$name', '$topic', '$phrase', '$date', '$time')";  
     
+                //outputs text if record is created
+                if ($conn->query($sql) === TRUE){
+                    echo "<p class='notification_message'>Phrase added to database</p>";
+                }
+                //if connection fails, prints error message
+                else{
+                    echo "<p class='notification_message'>error: " . $sql . "</p><br>" . $conn->error;
+                }
+            } 
+
+            // else date and time combo already exist
+            else {
+                echo "<p class='notification_message'>Date & Time combo already exist.</p>";
+            }
+        }
+
+        // if only date is set
+        else if ($_POST["addDate"] != ''){                          
+            echo "<p class='notification_message'>If you set date, you must set the time.</p>";
+        }
+
+        // if only time is set
+        else if (isset($_POST["addTime"])){                           
+            echo "<p class='notification_message'>If you set time, you must set the date.</p>";
+        }
+
+        // if neither date or time are set, set date/time automatically
+        else{                                                               
+            $sql = "INSERT INTO quote_table
+            (author, topic, quote, quote_date, quote_time)
+            VALUES ('$name', '$topic', '$phrase', '$new_date', '$new_time')";  
+
+            // outputs text if record is created
+            if ($conn->query($sql) === TRUE){
+                echo "<p class='notification_message'>Phrase added to database</p>";
+            }
+                    
+            // if connection fails, prints error message
+            else{
+                echo "error" . $sql . "<br>" . $conn->error;
+            }
+        }
+    }
+
     // updates phrase if set 
-    if (isset($_GET["updatePhrase"])){
-        $phrase = $_GET["updatePhrase"];
-        $id = $_GET["updateId"];
+    if (isset($_POST["editId"])){
+        $id = $_POST["editId"];
+        $name = $_POST["editName"];
+        $topic = $_POST["editTopic"];
+        $phrase = $_POST["editPhrase"];
+        $date = $_POST["editDate"];
+        $time = $_POST["editTime"];
 
-        $sql = "UPDATE quote_table
-                SET quote = '$phrase'
+        // convert time to proper format
+        if ($time == "morning"){
+            $time = "08:00:00";
+        }
+        if ($time == "evening"){
+            $time = "20:00:00";
+        }
+
+        // check to see if date/time combo exists already in db
+        $sql="SELECT 1
+            FROM quote_table
+            WHERE quote_date='$date' AND quote_time='$time'";
+
+        $result = mysqli_query($conn, $sql);
+
+        // if date/time combo are unique, add the entry to the db
+        if($result !== false && $result->num_rows == 0){
+            $sql = "UPDATE quote_table
+            SET author = '$name',
+                topic = '$topic',
+                quote = '$phrase',
+                quote_date = '$date',
+                quote_time = '$time'
                 WHERE id = $id";
 
-        if ($conn->query($sql) === TRUE){
-            echo "<p name=updateMsg>Updated phrase<p>";
+            // outputs text if record is created
+            if ($conn->query($sql) === TRUE){
+                echo "<p class='notification_message'>Updated entry<p>";
+            }
+
+            // if connection fails, prints error message
+            else{
+                echo "error: " . $sql . "<br>" . $conn->error;
+            }
         }
+        // else don't update because date/time combo exist already
         else{
-            echo "error: " . $sql . "<br>" . $conn->error;
-        }
+            echo "<p class='notification_message'>Date & Time combo already exist.</p>";
+        } 
     }
-
-    // update topic if set
-    if (isset($_GET["updateTopic"])){
-        $topic = $_GET["updateTopic"];
-        $id = $_GET["updateId"];
-
-        $sql = "UPDATE quote_table
-                SET topic = '$topic'
-                WHERE id = $id";
-
-        if ($conn->query($sql) === TRUE){
-            echo "<p name=updateMsg>Updated Topic<p>";
-        }
-        else{
-            echo "error: " . $sql . "<br>" . $conn->error;
-        }
-    }
-    // update name if set
-    if (isset($_GET["updateName"])){
-        $name = $_GET["updateName"];
-        $id = $_GET["updateId"];
-
-        $sql = "UPDATE quote_table
-                SET author = '$name'
-                WHERE id = $id";
-
-        if ($conn->query($sql) === TRUE){
-            echo "<p name=updateMsg>Updated Name<p>";
-        }
-        else{
-            echo "error: " . $sql . "<br>" . $conn->error;
-        }
-    }
+    // close connection to db
+    $conn -> close();
  ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -109,168 +186,207 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hangman Game</title>
-    <link rel="stylesheet" href="./css/hangman_style.css" />
+
+    <script src="jquery/jquery.js"></script>
+    <link rel="stylesheet" href="./css/hangman_style.css">
+
+    <link rel="stylesheet" type="text/css" href="DataTables/DataTables-1.12.1/css/jquery.dataTables.css"/>
+    <script type="text/javascript" src="DataTables/DataTables-1.12.1/js/jquery.dataTables.js"></script>
+
 </head>
 
 <body>
-
-    <div class="button-div">
-    <button class="add-phrase-button"><a href='addPhrase.php'> Add phrase </a></button>
-    </div>  
-
-
-    <table class="phrase_table">
-        <tr class="table_title">
-            <th> ID </th>
-            <th> Author </th>
-            <th> Topic </th>
-            <th> Quote </th>
-            <th> Quote Date </th>
-            <th> Quote Time </th>
-            <th> remove </th>
-            <th> edit </th>
-        </tr>
-
-
-        <?php
-            
-            // from where to start selecting from database
-            $start_from = ($current_page-1) * $rows_per_page;
-
-            //run sql query and obtain results
-            $sql = "select * from quote_table limit $start_from,$rows_per_page";
-            $resultlog = mysqli_query($conn, $sql);
-
-            //display each phrase as a row in the table
-            while($row = mysqli_fetch_array($resultlog))
-            {
-                echo "<tr class='table_data'>";
-
-                echo "<td>" . $row['id'] . "</td>";
-                echo "<td>" . $row['author'] . "</td>";
-                echo "<td>" . $row['topic'] . "</td>";
-                echo "<td>" . $row['quote'] . "</td>";
-                echo "<td>" . $row['quote_date'] . "</td>";
-                echo "<td>" . $row['quote_time'] . "</td>";
-
-                // remove phrase button
-                echo "<form method='POST' action=''>";
-                echo "<td> <button type='submit' name='removeQuote' value= '".$row['id']."'> remove </button> </td>"; 
-                echo "</form>";
-
-                // update button
-                echo '<td> <button type="button" name="editQuote" onclick="openForm('.$row['id'].')"> edit </button> </td>';
-
-                echo "</tr>";
-
-                // div responsible for dimming the page if the update button is clicked
-                echo '<div class="dim" id="dim"> </div>';
-                
-                // div that contains the update form, hidden until the update button is clicked
-                echo '<div id="myForm'.$row['id'].'" class="updateForm">';
-                    echo '<button type="button" onclick="closeForm('.$row['id'].')" class="closeFormButton">+</button>';
-                    echo "<h1 class='formTitle'>Update " . $row['id'] . "</h1>";
-                    ?>
-                    
-                    <form>
-                        <div class=name_input>
-                            <input type="text" class ="update_name_input" name="updateName" placeholder="Author name...." required>
-                            <input type="hidden" name="updateId" value='<?php echo $row['id']; ?>'>
-                        </div>
-                        <div class="submit-button">
-                            <button type="submit" name="update" class="update_phrase_button"> update author</button>
-                        </div>
-                    </form>
-                    <form>
-                        <div class=topic_input>
-                            <input type="text" class ="update_topic_input" name="updateTopic" placeholder="Topic...." required>
-                            <input type="hidden" name="updateId" value='<?php echo $row['id']; ?>'>
-                        </div>
-                        <div class="submit-button">
-                            <button type="submit" name="submit" class="update_topic_button"> update topic</button>
-                        </div>
-                    </form>
-                    <form>
-                        <div class="phrase-input">
-                            <input type="text" class ="update_phrase_input" name="updatePhrase" placeholder="phrase...." required>
-                            <input type="hidden" name="updateId" value='<?php echo $row['id']; ?>'>
-                        </div>
-                        <div class="submit-button">
-                            <button type="submit" name="submit" class="update_phrase_button"> update phrase</button>
-                        </div>
-                    </form>
-                </div>
-            <?php
-            }
-            ?>
+    <table id="example" class="display nowrap" style="width:100%" >
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Author</th>
+                <th>Topic</th>
+                <th>Phrase</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
     </table>
-    
-    Rows per page 
-    <select onchange="location = value;">
-        <option value = "none" selected disabled hidden> <?php $rows_per_page ?> </option> 
-        <option value="phrases.php?per_page=5"> 5 </value>
-        <option value="phrases.php?per_page=10"> 10 </value>
-        <option value="phrases.php?per_page=20"> 20 </value>
-        <option value="phrases.php?per_page=30"> 30 </value>
-    </select>
-    
-    <?php 
-        $sql = "select * from quote_table";
-        $resultlog = mysqli_query($conn, $sql);
-
-        $total_rows = mysqli_num_rows($resultlog);
-        $total_pages = ceil($total_rows/$rows_per_page);
-
-        // pagination page selector
-        echo "<div class='page_link_div'>";
-            if ($total_pages > 1){
-                // if the current page is 3 or higher add three dots after displaying page 1
-                if ($current_page > 3){
-                    echo "<a href='phrases.php?page=1&per_page=".$rows_per_page."' class=page_link_button> 1 </a>";
-                    echo "<p class=dots>";
-                    echo " . . . ";
-                    echo "</p>";
-                }
-                // displays the 2 before the current
-                if ($current_page-2 > 0 ){
-                echo "<a href='phrases.php?page=".$current_page-2 ."&per_page=".$rows_per_page."' class=page_link_button>" . $current_page-2 . "</a>";
-                }
-                // displays the page before the current
-                if ($current_page-1 > 0 ){
-                    echo "<a href='phrases.php?page=".$current_page-1 ."&per_page=".$rows_per_page."' class=page_link_button>" . $current_page-1 . "</a>";
-                }
-                // displays the current page
-                echo "<a href='phrases.php?page=".$current_page ."&per_page=".$rows_per_page."' class=page_link_button>" . $current_page . "</a>";
-                // displays the page number 1 after the current page
-                if ($current_page+1 <= $total_pages){
-                    echo "<a href='phrases.php?page=".$current_page+1 ."&per_page=".$rows_per_page."' class=page_link_button>" . $current_page+1 . "</a>";
-                }
-                // displays the page number 2 after the current page
-                if ($current_page+2 <= $total_pages){
-                    echo "<a href='phrases.php?page=".$current_page+2 ."&per_page=".$rows_per_page."' class=page_link_button>" . $current_page+2 . "</a>";
-                }
-                // displays 3 dots and the last page number
-                if ($current_page < ceil($total_rows/$rows_per_page)-2){
-                    echo "<p class=dots>";
-                    echo " . . . ";
-                    echo "</p>";
-                    echo "<a href='phrases.php?page=".ceil($total_rows/$rows_per_page) ."&per_page=".$rows_per_page."' class=page_link_button>" . ceil($total_rows/$rows_per_page) . "</a>";
-                }
-            }
-        echo "</div>";
-
-    ?>
+    <button type="button" onclick="openForm('addEntryForm')" class="add_phrase_button">Add Phrase</button>
 </body>
 
+
+<div class="dim" id="dim"> </div>
+
+<!-- ADD ENTRY FORM -->
+<div id="addEntryForm" name="addEntryForm" class="addEntryForm">
+    <button type="button" onclick="closeForm('addEntryForm')" class="closeFormButton">+</button>
+    <form method="POST">
+        <h1 class='formTitle'>Add Phrase</h1>
+        <div class=name_input>
+            Name
+            <input type="text" class ="add_name_input" name="addName" placeholder="Author name...." required>
+            <p class="required">* </p>
+        </div>
+
+        <div class="topic_input">
+            Topic
+            <input type="text" class ="add_topic_input" name="addTopic" placeholder="Topic...." required>
+            <p class="required">* </p>
+        </div>
+
+        <div class="Phrase_input">
+            Phrase
+            <input type="text" class ="add_phrase_input" name="addPhrase" placeholder="Phrase...." required>
+            <p class="required">* </p>
+        </div>
+
+        <div class="date_input">
+            Date
+            <input type="date" class ="add_date_input" name="addDate" placeholder="Date....">
+        </div>
+
+        <div class="time_input">
+                <input type="radio" name="addTime" id="morning" value="morning"/> 
+                <label for="morning"> Morning </label>
+                <input type="radio" name="addTime" id="evening" value="evening"/> 
+                <label for="morning"> Evening </label>
+        </div>
+
+        <div class="submit-button">
+            <button type="submit" name="addEntry" class="add_entry_button"> Add Phrase</button>
+        </div>
+    </form>
+</div>
+
+<!-- EDIT ENTRY FORM -->
+<div id="editEntryForm" name="editEntryForm" class="editEntryForm">
+    <button type="button" onclick="closeForm('editEntryForm')" class="closeFormButton">+</button>
+    <form method="POST">
+        <h1 class='formTitle'>Edit Phrase</h1>
+        <div class=name_input>
+            Name
+            <input type="text" class ="edit_name_input" name="editName" id="editName" placeholder="Author name...." required>
+            <p class="required">* </p>
+        </div>
+
+        <div class="topic_input">
+            Topic
+            <input type="text" class ="edit_topic_input" name="editTopic" id="editTopic" placeholder="Topic...." required>
+            <p class="required">* </p>
+        </div>
+
+        <div class="Phrase_input">
+            Phrase
+            <input type="text" class ="edit_phrase_input" name="editPhrase" id="editPhrase" placeholder="Phrase...." required>
+            <p class="required">* </p>
+        </div>
+
+        <div class="date_input">
+            Date
+            <input type="date" class ="edit_date_input" name="editDate" id="editDate" placeholder="Date....">
+        </div>
+
+        <div class="time_input">
+                <input type="radio" name="editTime" id="morning" value="morning"/> 
+                <label for="morning"> Morning </label>
+                <input type="radio" name="editTime" id="evening" value="evening"/> 
+                <label for="morning"> Evening </label>
+        </div>
+
+        <input type="hidden" class ="edit_id_input" name="editId" id="editId"/> 
+
+
+        <div class="submit-button">
+            <button type="submit" name="editEntry" class="edit_entry_button"> Update Phrase</button>
+        </div>
+    </form>
+</div>
+
 <script>
-    // opens the form and dims page when the user selects update
+    // get data via ajax request and populate table
+    $(document).ready(function() {
+        $('#example').dataTable({
+            "processing": true,
+            "ajax": "getData.php",
+            "columns": [
+                {data: 'id',}    ,
+                {data: 'author'},
+                {data: 'topic'},
+                {data: 'quote'},
+                {data: 'quote_date'},
+                {data: 'quote_time'},
+                {
+                    data: null,
+                    className: "delete_entry",
+                    defaultContent: '<button class="delete_entry"><img src="images/trash_icon.png" class="delete_icon"/></button>',
+                    orderable: false,
+                    "width": "5%"
+                },
+                {   
+                    data: null,
+                    className: "edit_entry",
+                    defaultContent: '<button type="button" class="edit_entry" onclick="openForm(\'editEntryForm\')"><img src="images/pencil_icon.png" class="edit_icon"/></button>',
+                    orderable: false,
+                    "width": "5%"
+                }
+            ]
+        });
+
+        // set datatable to variable
+        var table = $('#example').DataTable();
+
+        // when delete button is clicked run the following function
+        $('#example').on( 'click', 'td.delete_entry', function () {
+            // get this row from data table
+            var data = table.row(this).data();
+
+            // run specified function via ajax request to remove entry from db
+            jQuery.ajax({
+                type: "POST",
+                url: 'removeEntry.php',
+                dataType: 'json',
+                data: {functionname: 'removeQuote', arguments: [data['id']]},
+            });
+
+            // remove entry from ui
+            table
+			.row($(this).parents('tr'))
+			.remove()
+		    .draw();
+        });
+
+        // when edit button is clicked run the following function
+        $('#example').on( 'click', 'td.edit_entry', function () {
+            // get this row from data table
+            var data = table.row(this).data();
+
+            // populate form fields with data
+            document.getElementById('editName').setAttribute('value', data['author']);
+            document.getElementById('editTopic').setAttribute('value', data['topic']);
+            document.getElementById('editPhrase').setAttribute('value', data['quote']);
+            document.getElementById('editDate').setAttribute('value', data['quote_date']);
+            document.getElementById('editId').setAttribute('value', data['id']);
+
+            if (data['quote_time'] == "08:00:00"){
+                $('input[id=morning]').prop('checked', true);
+
+            }
+            if (data['quote_time'] == '20:00:00'){
+                $('input[id=evening]').prop('checked', true);
+            }
+        });
+    
+    });
+    
+    // opens the form and dims page 
     function openForm(id){
-        document.getElementById("myForm"+id).style.display="block";
+        document.getElementById(id).style.display="block";
         document.getElementById("dim").style.display="block";
     }
+    
     // closes the form and un-dims the page 
     function closeForm(id){
-        document.getElementById("myForm"+id).style.display="none";
+        document.getElementById(id).style.display="none";
         document.getElementById("dim").style.display="none";
     }
+
 </script>
