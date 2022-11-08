@@ -1,9 +1,5 @@
 <?php
-include("stats.php");
 include("db_credentials.php");
-?>
-
- <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -40,8 +36,8 @@ if ($_SESSION["gameOver"] == true && $_SESSION["flag"] == true) {
 }
 
 // Testing only. Remove or comment out later
-echo "QUOTE: " . $_SESSION['quote'] . "<br>";
-$current_day = date("Y-m-d");
+// echo "QUOTE: " . $_SESSION['quote'] . "<br>";
+// $current_day = date("Y-m-d");
 // echo "Current Date: " . $current_day . "<br>";
 // echo "Yesterday: " . date("Y-m-d", strtotime('-1 day', strtotime($current_day))) . "<br>";
 // echo "Current Time: " . date("H:i:s") . "<br>";
@@ -367,8 +363,12 @@ function getQuote($date, $time){
     return $quote;
 }
 
+function printGameVars() {
+    echo "QUOTE: " . $_SESSION['quote'] . "<br>";
+    echo $_SESSION["remainingChars"];
+}
 
-echo $_SESSION["remainingChars"];
+
 
 ?>
 
@@ -386,8 +386,11 @@ echo $_SESSION["remainingChars"];
 </head>
 
 <body>
+    <?php
+    include("stats.php");
+    printGameVars();
+    ?>
 
- 
 
     <div class="container">
 

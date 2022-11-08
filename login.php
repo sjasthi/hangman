@@ -2,7 +2,6 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-include('nav.php');
 include("db_credentials.php");
 
 function processLogin() {
@@ -59,7 +58,7 @@ function getPassword($email) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hangman Game</title>
+    <title>Login</title>
 
     <script src="jquery/jquery.js"></script>
     <link rel="stylesheet" href="./css/hangman_style.css">
@@ -72,23 +71,26 @@ function getPassword($email) {
 
 
 <body>
-<div class="login">
-    <h1>Log In</h1>
-    <form action="login.php" method="post" autocomplete="off">
-        <div class="field_wrap">
-            <input id="email_field" type="email" name="email" placeholder="Email...." required style="width:200px">
-            <p class="required">* </p>
+    <?php
+    include('nav.php');
+    ?>
+    <div class="login">
+        <h1>Log In</h1>
+        <form action="login.php" method="post" autocomplete="off">
+            <div class="field_wrap">
+                <input id="email_field" type="email" name="email" placeholder="Email...." required style="width:200px">
+                <p class="required">* </p>
+            </div>
+            <div class="field_wrap">
+                <input id="password_field" type="password" name="password" placeholder="Password..." required style="width:200px">
+                <p class="required">* </p>
+            </div>
+            <input id="login_submit_button" type="submit" value="Submit" name="submit">
+        </form>
+        <div id="login_message">
+            <?php
+            processLogin();
+            ?>
         </div>
-        <div class="field_wrap">
-            <input id="password_field" type="password" name="password" placeholder="Password..." required style="width:200px">
-            <p class="required">* </p>
-        </div>
-        <input id="login_submit_button" type="submit" value="Submit" name="submit">
-    </form>
-    <div id="login_message">
-        <?php
-        processLogin();
-        ?>
     </div>
-</div>
 </body>

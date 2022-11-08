@@ -4,83 +4,65 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 function isLoggedIn() {
-    return $_SESSION['loggedIn'];
+    if (isset($_SESSION['loggedIn'])) {
+        return $_SESSION['loggedIn'];
+    }
+    return false;
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hangman</title>
+<nav>
     <link rel="stylesheet" href="./css/mainStylesheet.css">
-</head>
 
-<body>
+    <ul class="nav-list">
+        <a href="index.php">
+            <li class="logo">
+                <img src="./images/app_logo.png" alt="">
+                <br>
+                Hangman
+            </li>
 
-
-    <nav>
-
-        <ul class="nav-list">
-            <a href="index.php">
-                <li class="logo">
-                    <img src="./images/app_logo.png" alt="">
-                    <br>
-                    Hangman
-                </li>
-
-            </a>
+        </a>
 
 
-            <a href="index.php">
-                <li class="hangman-logo">
-                    <img src="./images/home.png" alt="">
-                    <br>
-                    Home
-                </li>
+        <a href="index.php">
+            <li class="hangman-logo">
+                <img src="./images/home.png" alt="">
+                <br>
+                Home
+            </li>
 
-            </a>
+        </a>
 
-            <?php
-            if (!isLoggedIn()) {
-            ?>
-            <a href="login.php">
-                <li>
-                    <img src="./images/login.png" alt="">
-                    <br>
-                    Login
-                </li>
-            </a>
-            <?php
-            } else {
-            ?>
-            <a href="logout.php">
-                <li>
-                    <img src="./images/login.png" alt="">
-                    <br>
-                    Logout
-                </li>
-            </a>
+        <?php
+        if (!isLoggedIn()) {
+        ?>
+        <a href="login.php">
+            <li>
+                <img src="./images/login.png" alt="">
+                <br>
+                Login
+            </li>
+        </a>
+        <?php
+        } else {
+        ?>
+        <a href="logout.php">
+            <li>
+                <img src="./images/login.png" alt="">
+                <br>
+                Logout
+            </li>
+        </a>
 
-            <?php } ?>
+        <?php } ?>
 
 
-            <a href="phrases.php">
-                <li>
-                    <img src="./images/login.png" alt="">
-                    <br>
-                    Phrases
-                </li>
-
-            </a>
-
-        </ul>
-    </nav>
-
-   
-
-</body>
-
-</html>
+        <a href="phrases.php">
+            <li>
+                <img src="./images/login.png" alt="">
+                <br>
+                Phrases
+            </li>
+        </a>
+    </ul>
+</nav>

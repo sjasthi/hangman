@@ -1,7 +1,7 @@
 
  <?php
     // header
-    include('nav.php');
+    // include('nav.php');
 
     // db credentials
     DEFINE('DB_SERVER', 'localhost');
@@ -145,7 +145,7 @@
         // check to see if date/time combo exists already in db
         $sql="SELECT 1
             FROM quote_table
-            WHERE quote_date='$date' AND quote_time='$time'";
+            WHERE quote_date='$date' AND quote_time='$time' AND id!='$id'";
 
         $result = mysqli_query($conn, $sql);
 
@@ -196,6 +196,9 @@
 </head>
 
 <body>
+    <?php
+    include('nav.php');
+    ?>
     <table id="example" class="display nowrap" style="width:100%" >
         <thead>
             <tr>
