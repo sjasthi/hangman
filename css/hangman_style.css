@@ -136,12 +136,12 @@ font-size: 15px;
   transform: rotate(45deg);
   cursor: pointer;
 }
-.delete_icon, .edit_icon {
+.delete_icon, .edit_icon, .play_icon {
   width:50%;
   height: 50%;
 }
 
-.delete_entry, .edit_entry {
+.delete_entry, .edit_entry, .play_entry {
   border: none;
   background-color: white;
   cursor: pointer;

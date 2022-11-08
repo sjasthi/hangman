@@ -133,6 +133,31 @@ INSERT INTO `user_info` (`user_id`, `user_first_name`, `user_last_name`, `user_e
 (103, 'Jacob', 'Berge', 'jacob.berge@my.metrostate.edu', 'password', 'admin'),
 (104, 'John', 'Smith', 'john.smith@gmail.com', 'password2', 'client');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `custom_quotes_table`
+--
+
+CREATE TABLE `custom_quotes_table` (
+  `id` int(11) NOT NULL,
+  `author` varchar(50) DEFAULT NULL,
+  `topic` varchar(50) DEFAULT NULL,
+  `quote` varchar(300) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `custom_quotes_table`
+--
+
+INSERT INTO `custom_quotes_table` (`id`, `author`, `topic`, `quote`) VALUES
+(1, 'Bruce', 'Test 1', 'first test phrase'),
+(2, 'Bruce', 'Test 2', 'second test phrase'),
+(3, 'Bruce', 'Test 3', 'third test phrase');
+
+--
+-- Indexes for dumped tables
+
 --
 -- Indexes for dumped tables
 --
@@ -154,6 +179,12 @@ ALTER TABLE `quote_table`
 --
 ALTER TABLE `user_info`
   ADD PRIMARY KEY (`user_id`);
+  
+--
+-- Indexes for table `custom_quotes_table`
+--
+ALTER TABLE `custom_quotes_table`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -175,3 +206,15 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+--
+-- AUTO_INCREMENT for table `custom_quotes_table`
+--
+ALTER TABLE `custom_quotes_table`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
