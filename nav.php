@@ -59,9 +59,17 @@ function isLoggedIn() {
 
         <a href="phrases.php">
             <li>
-                <img src="./images/login.png" alt="">
+                <img src="./images/key.png" alt="">
                 <br>
                 Phrases
+            </li>
+        </a>
+
+        <a href="customPhrases.php">
+            <li>
+                <img src="./images/key.png" alt="">
+                <br>
+                Custom Phrases
             </li>
         </a>
     </ul>
