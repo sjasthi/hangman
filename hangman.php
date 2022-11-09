@@ -21,6 +21,12 @@ if (isset($_POST['button1'])) {
 
 // set cookie
 
+if (isset($_GET['id'])) {
+    resetGame();
+}
+
+
+
 if (empty($_SESSION["test"])) {
     setInitialCookies();
     resetGame();
@@ -305,7 +311,14 @@ function resetGame()
     $current_date = date("Y-m-d");
     $current_time = date("H:i:s");
 
-    $_SESSION['quote'] = getQuote($current_date, $current_time);
+    if (isset($_GET['id'])) {
+        $_SESSION['quote'] = getCustomQuote($_GET['id']);
+    }
+    else {
+        $_SESSION['quote'] = getQuote($current_date, $current_time);
+    }
+    // $_SESSION['quote'] = getQuote($current_date, $current_time);
+
     $_SESSION["baseChars"] = getBaseChars($_SESSION['quote']);
     $_SESSION["logicalChars"] = getLogicalChars($_SESSION['quote']);
     $_SESSION["guesses"] = 0;
@@ -334,10 +347,6 @@ function resetGame()
     }
 
     // set cookies to zero
-
-
-   
- 
 }
 
 # generates a quote based on date and time from the mysql 'quote_db' database
@@ -356,6 +365,22 @@ function getQuote($date, $time){
     $conn = dbConnect();
 
     $resultlog = mysqli_query($conn,"SELECT * FROM quote_table WHERE quote_date = '$active_date' AND quote_time = '$active_time'") or die(mysqli_error($conn));
+    while($row = mysqli_fetch_array($resultlog)){
+        $quote = $row['quote'];
+    }
+
+    return $quote;
+}
+
+function getCustomQuote($id){
+    DEFINE('SERVER', 'localhost');
+    DEFINE('NAME', 'quotes_db');
+    DEFINE('USER', 'root');
+    DEFINE('PASS', 'ics311');
+
+    $conn = mysqli_connect(SERVER, USER, PASS, NAME);
+
+    $resultlog = mysqli_query($conn,"SELECT * FROM custom_quotes_table WHERE id = '$id'") or die(mysqli_error($conn));
     while($row = mysqli_fetch_array($resultlog)){
         $quote = $row['quote'];
     }
