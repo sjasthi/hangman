@@ -1,7 +1,7 @@
 
  <?php
     // header
-    // include('nav.php');
+    include('nav.php');
 
     // db credentials
     DEFINE('DB_SERVER', 'localhost');
@@ -16,31 +16,7 @@
         die("Connection failed: " . $conn->connect_error);
     }
   
-    // select max date then select max time from the max dates
-    $sql = "SELECT id, quote_date, MAX(quote_time) as quote_time 
-        FROM quote_table WHERE quote_date = (
-        SELECT MAX(quote_date) FROM quote_table 
-        )";
 
-    //run the sql query
-    $result = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_assoc($result);
-
-    $quote_date = $row[ 'quote_date'];
-    $quote_time = $row['quote_time'];
-
-    // if time is 8am, keep the date the same as the max entry and add 12 hours to the time
-    if ($quote_time == "08:00:00"){
-        $new_date = $quote_date;
-        $new_time = "20:00:00";
-    }
-
-    // if the time is 8pm add 1 day to the date and set the time as 8am
-    if ($quote_time == "20:00:00"){
-        $time_added = strtotime($quote_date) + (3600*36);
-        $new_date = date("Y-m-d", $time_added);
-        $new_time = "08:00:00";
-    }    
 
     // if add phrase is set, attempt to add new phrase
     if (isset($_POST["addName"])){
@@ -48,81 +24,21 @@
         // set variables to post values
         $name = $_POST["addName"];
         $topic = $_POST["addTopic"];
-        $phrase = $_POST["addPhrase"];
-        if (isset($_POST["addDate"])){      
-            $date = $_POST["addDate"];
-        }
-        if (isset($_POST["addTime"])){      
-            $time = $_POST["addTime"];
-        }   
+        $phrase = $_POST["addPhrase"]; 
+                             
+        $sql = "INSERT INTO custom_quotes_table
+        (author, topic, quote)
+        VALUES ('$name', '$topic', '$phrase')";  
 
-        // if date and time are set
-        if ($date != '' && isset($_POST["addTime"])){    
-
-            // convert time to proper format
-            if ($time == "morning"){
-                $time = "08:00:00";
-            }
-            if ($time == "evening"){
-                $time = "20:00:00";
-            }
-
-            // check to see if date/time combo exists already in db
-            $sql="SELECT 1
-                FROM quote_table
-                WHERE quote_date='$date' AND quote_time='$time'";
-
-            $result = mysqli_query($conn, $sql);
-
-            // if date/time combo are unique, add the entry to the db
-            if($result !== false && $result->num_rows == 0){
-
-                $sql = "INSERT INTO quote_table
-                (author, topic, quote, quote_date, quote_time)
-                VALUES ('$name', '$topic', '$phrase', '$date', '$time')";  
-    
-                //outputs text if record is created
-                if ($conn->query($sql) === TRUE){
-                    echo "<p class='notification_message'>Phrase added to database</p>";
-                }
-                //if connection fails, prints error message
-                else{
-                    echo "<p class='notification_message'>error: " . $sql . "</p><br>" . $conn->error;
-                }
-            } 
-
-            // else date and time combo already exist
-            else {
-                echo "<p class='notification_message'>Date & Time combo already exist.</p>";
-            }
-        }
-
-        // if only date is set
-        else if ($_POST["addDate"] != ''){                          
-            echo "<p class='notification_message'>If you set date, you must set the time.</p>";
-        }
-
-        // if only time is set
-        else if (isset($_POST["addTime"])){                           
-            echo "<p class='notification_message'>If you set time, you must set the date.</p>";
-        }
-
-        // if neither date or time are set, set date/time automatically
-        else{                                                               
-            $sql = "INSERT INTO quote_table
-            (author, topic, quote, quote_date, quote_time)
-            VALUES ('$name', '$topic', '$phrase', '$new_date', '$new_time')";  
-
-            // outputs text if record is created
-            if ($conn->query($sql) === TRUE){
-                echo "<p class='notification_message'>Phrase added to database</p>";
-            }
+        // outputs text if record is created
+        if ($conn->query($sql) === TRUE){
+            echo "<p class='notification_message'>Phrase added to database</p>";            }
                     
-            // if connection fails, prints error message
-            else{
-                echo "error" . $sql . "<br>" . $conn->error;
-            }
+        // if connection fails, prints error message
+        else{
+            echo "error" . $sql . "<br>" . $conn->error;
         }
+        
     }
 
     // updates phrase if set 
@@ -131,48 +47,24 @@
         $name = $_POST["editName"];
         $topic = $_POST["editTopic"];
         $phrase = $_POST["editPhrase"];
-        $date = $_POST["editDate"];
-        $time = $_POST["editTime"];
 
-        // convert time to proper format
-        if ($time == "morning"){
-            $time = "08:00:00";
-        }
-        if ($time == "evening"){
-            $time = "20:00:00";
-        }
-
-        // check to see if date/time combo exists already in db
-        $sql="SELECT 1
-            FROM quote_table
-            WHERE quote_date='$date' AND quote_time='$time' AND id!='$id'";
-
-        $result = mysqli_query($conn, $sql);
-
-        // if date/time combo are unique, add the entry to the db
-        if($result !== false && $result->num_rows == 0){
-            $sql = "UPDATE quote_table
-            SET author = '$name',
+        $sql = "UPDATE custom_quotes_table
+                SET author = '$name',
                 topic = '$topic',
-                quote = '$phrase',
-                quote_date = '$date',
-                quote_time = '$time'
+                quote = '$phrase'
                 WHERE id = $id";
 
-            // outputs text if record is created
-            if ($conn->query($sql) === TRUE){
-                echo "<p class='notification_message'>Updated entry<p>";
-            }
-
-            // if connection fails, prints error message
-            else{
-                echo "error: " . $sql . "<br>" . $conn->error;
-            }
+        // outputs text if record is created
+        if ($conn->query($sql) === TRUE){
+            echo "<p class='notification_message'>Updated entry<p>";
         }
-        // else don't update because date/time combo exist already
+
+        // if connection fails, prints error message
         else{
-            echo "<p class='notification_message'>Date & Time combo already exist.</p>";
-        } 
+            echo "error: " . $sql . "<br>" . $conn->error;
+        }
+    
+
     }
     // close connection to db
     $conn -> close();
@@ -196,9 +88,6 @@
 </head>
 
 <body>
-    <?php
-    include('nav.php');
-    ?>
     <table id="example" class="display nowrap" style="width:100%" >
         <thead>
             <tr>
@@ -206,8 +95,7 @@
                 <th>Author</th>
                 <th>Topic</th>
                 <th>Phrase</th>
-                <th>Date</th>
-                <th>Time</th>
+                <th></th>
                 <th></th>
                 <th></th>
             </tr>
@@ -242,18 +130,6 @@
             <p class="required">* </p>
         </div>
 
-        <div class="date_input">
-            Date
-            <input type="date" class ="add_date_input" name="addDate" placeholder="Date....">
-        </div>
-
-        <div class="time_input">
-                <input type="radio" name="addTime" id="morning" value="morning"/> 
-                <label for="morning"> Morning </label>
-                <input type="radio" name="addTime" id="evening" value="evening"/> 
-                <label for="morning"> Evening </label>
-        </div>
-
         <div class="submit-button">
             <button type="submit" name="addEntry" class="add_entry_button"> Add Phrase</button>
         </div>
@@ -283,20 +159,7 @@
             <p class="required">* </p>
         </div>
 
-        <div class="date_input">
-            Date
-            <input type="date" class ="edit_date_input" name="editDate" id="editDate" placeholder="Date....">
-        </div>
-
-        <div class="time_input">
-                <input type="radio" name="editTime" id="morning" value="morning"/> 
-                <label for="morning"> Morning </label>
-                <input type="radio" name="editTime" id="evening" value="evening"/> 
-                <label for="morning"> Evening </label>
-        </div>
-
         <input type="hidden" class ="edit_id_input" name="editId" id="editId"/> 
-
 
         <div class="submit-button">
             <button type="submit" name="editEntry" class="edit_entry_button"> Update Phrase</button>
@@ -309,14 +172,19 @@
     $(document).ready(function() {
         $('#example').dataTable({
             "processing": true,
-            "ajax": "getData.php",
+            "ajax": "getCustomData.php",
             "columns": [
                 {data: 'id',}    ,
                 {data: 'author'},
                 {data: 'topic'},
                 {data: 'quote'},
-                {data: 'quote_date'},
-                {data: 'quote_time'},
+                {
+                    data: null,
+                    className: "play_entry",
+                    defaultContent: '<button class="play_entry"><img src="images/play_icon.png" class="play_icon"/></button>',
+                    orderable: false,
+                    "width": "5%"
+                },
                 {
                     data: null,
                     className: "delete_entry",
@@ -337,6 +205,11 @@
         // set datatable to variable
         var table = $('#example').DataTable();
 
+        $('#example').on( 'click', 'td.play_entry', function () {
+            var data = table.row(this).data();
+            window.location.href = "hangman.php?id="+data['id'];
+        });
+
         // when delete button is clicked run the following function
         $('#example').on( 'click', 'td.delete_entry', function () {
             // get this row from data table
@@ -345,7 +218,7 @@
             // run specified function via ajax request to remove entry from db
             jQuery.ajax({
                 type: "POST",
-                url: 'removeEntry.php',
+                url: 'removeCustomEntry.php',
                 dataType: 'json',
                 data: {functionname: 'removeQuote', arguments: [data['id']]},
             });
@@ -366,16 +239,8 @@
             document.getElementById('editName').setAttribute('value', data['author']);
             document.getElementById('editTopic').setAttribute('value', data['topic']);
             document.getElementById('editPhrase').setAttribute('value', data['quote']);
-            document.getElementById('editDate').setAttribute('value', data['quote_date']);
             document.getElementById('editId').setAttribute('value', data['id']);
 
-            if (data['quote_time'] == "08:00:00"){
-                $('input[id=morning]').prop('checked', true);
-
-            }
-            if (data['quote_time'] == '20:00:00'){
-                $('input[id=evening]').prop('checked', true);
-            }
         });
     
     });

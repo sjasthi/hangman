@@ -1,9 +1,5 @@
 <?php
-include("stats.php");
 include("db_credentials.php");
-?>
-
- <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -25,6 +21,12 @@ if (isset($_POST['button1'])) {
 
 // set cookie
 
+if (isset($_GET['id'])) {
+    resetGame();
+}
+
+
+
 if (empty($_SESSION["test"])) {
     setInitialCookies();
     resetGame();
@@ -40,8 +42,8 @@ if ($_SESSION["gameOver"] == true && $_SESSION["flag"] == true) {
 }
 
 // Testing only. Remove or comment out later
-echo "QUOTE: " . $_SESSION['quote'] . "<br>";
-$current_day = date("Y-m-d");
+// echo "QUOTE: " . $_SESSION['quote'] . "<br>";
+// $current_day = date("Y-m-d");
 // echo "Current Date: " . $current_day . "<br>";
 // echo "Yesterday: " . date("Y-m-d", strtotime('-1 day', strtotime($current_day))) . "<br>";
 // echo "Current Time: " . date("H:i:s") . "<br>";
@@ -309,7 +311,14 @@ function resetGame()
     $current_date = date("Y-m-d");
     $current_time = date("H:i:s");
 
-    $_SESSION['quote'] = getQuote($current_date, $current_time);
+    if (isset($_GET['id'])) {
+        $_SESSION['quote'] = getCustomQuote($_GET['id']);
+    }
+    else {
+        $_SESSION['quote'] = getQuote($current_date, $current_time);
+    }
+    // $_SESSION['quote'] = getQuote($current_date, $current_time);
+
     $_SESSION["baseChars"] = getBaseChars($_SESSION['quote']);
     $_SESSION["logicalChars"] = getLogicalChars($_SESSION['quote']);
     $_SESSION["guesses"] = 0;
@@ -338,10 +347,6 @@ function resetGame()
     }
 
     // set cookies to zero
-
-
-   
- 
 }
 
 # generates a quote based on date and time from the mysql 'quote_db' database
@@ -367,8 +372,28 @@ function getQuote($date, $time){
     return $quote;
 }
 
+function getCustomQuote($id){
+    DEFINE('SERVER', 'localhost');
+    DEFINE('NAME', 'quotes_db');
+    DEFINE('USER', 'root');
+    DEFINE('PASS', '');
 
-echo $_SESSION["remainingChars"];
+    $conn = mysqli_connect(SERVER, USER, PASS, NAME);
+
+    $resultlog = mysqli_query($conn,"SELECT * FROM custom_quotes_table WHERE id = '$id'") or die(mysqli_error($conn));
+    while($row = mysqli_fetch_array($resultlog)){
+        $quote = $row['quote'];
+    }
+
+    return $quote;
+}
+
+function printGameVars() {
+    echo "QUOTE: " . $_SESSION['quote'] . "<br>";
+    echo $_SESSION["remainingChars"];
+}
+
+
 
 ?>
 
@@ -386,8 +411,11 @@ echo $_SESSION["remainingChars"];
 </head>
 
 <body>
+    <?php
+    include("stats.php");
+    printGameVars();
+    ?>
 
- 
 
     <div class="container">
 
