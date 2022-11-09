@@ -376,7 +376,7 @@ function getCustomQuote($id){
     DEFINE('SERVER', 'localhost');
     DEFINE('NAME', 'quotes_db');
     DEFINE('USER', 'root');
-    DEFINE('PASS', 'ics311');
+    DEFINE('PASS', '');
 
     $conn = mysqli_connect(SERVER, USER, PASS, NAME);
 
