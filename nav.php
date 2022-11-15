@@ -57,13 +57,22 @@ function isLoggedIn() {
         <?php } ?>
 
 
-        <a href="phrases.php">
-            <li>
-                <img src="./images/key.png" alt="">
-                <br>
-                Phrases
-            </li>
-        </a>
+    <?php     
+        // if user roll is "USER" show phrases tab (this needs to change to admin later)
+        $apiReturn = file_get_contents('https://wpapi.telugupuzzles.com/api/getRole.php?email=' . $_SESSION['userEmail']);
+        $parsedApiReturn = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $apiReturn), true );
+
+        if($parsedApiReturn["data"]=="USER"){
+            echo'<a href="phrases.php">';
+                echo'<li>';
+                    echo'<img src="./images/key.png" alt="">';
+                    echo'<br>';
+                    echo'Phrases';
+                echo'</li>';
+            echo'</a>';
+        }
+    ?>
+
 
         <a href="customPhrases.php">
             <li>

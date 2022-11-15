@@ -47,6 +47,7 @@ function checkPassword($email, $password) {
 
         if($parsedApiReturn["data"]){
         $login_status = true;
+        $_SESSION['userEmail'] = $email;
         }
 
     return $login_status;

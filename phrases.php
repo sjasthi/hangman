@@ -1,52 +1,136 @@
 
  <?php
-    include('db_credentials.php');
-
-    // connect to db
-    $conn = dbConnect();
-  
-    // select max date then select max time from the max dates
-    $sql = "SELECT id, quote_date, MAX(quote_time) as quote_time 
-        FROM quote_table WHERE quote_date = (
-        SELECT MAX(quote_date) FROM quote_table 
-        )";
-
-    //run the sql query
-    $result = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_assoc($result);
-
-    $quote_date = $row[ 'quote_date'];
-    $quote_time = $row['quote_time'];
-
-    // if time is 8am, keep the date the same as the max entry and add 12 hours to the time
-    if ($quote_time == "08:00:00"){
-        $new_date = $quote_date;
-        $new_time = "20:00:00";
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
     }
+    // if user roll is "USER" show phrases tab (this needs to change to admin later)
+    $apiReturn = file_get_contents('https://wpapi.telugupuzzles.com/api/getRole.php?email=' . $_SESSION['userEmail']);
+    $parsedApiReturn = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $apiReturn), true );
 
-    // if the time is 8pm add 1 day to the date and set the time as 8am
-    if ($quote_time == "20:00:00"){
-        $time_added = strtotime($quote_date) + (3600*36);
-        $new_date = date("Y-m-d", $time_added);
-        $new_time = "08:00:00";
-    }    
+    if($parsedApiReturn["data"]=="USER"){
 
-    // if add phrase is set, attempt to add new phrase
-    if (isset($_POST["addName"])){
+        include('db_credentials.php');
 
-        // set variables to post values
-        $name = $_POST["addName"];
-        $topic = $_POST["addTopic"];
-        $phrase = $_POST["addPhrase"];
-        if (isset($_POST["addDate"])){      
-            $date = $_POST["addDate"];
+        // connect to db
+        $conn = dbConnect();
+    
+        // select max date then select max time from the max dates
+        $sql = "SELECT id, quote_date, MAX(quote_time) as quote_time 
+            FROM quote_table WHERE quote_date = (
+            SELECT MAX(quote_date) FROM quote_table 
+            )";
+
+        //run the sql query
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+
+        $quote_date = $row[ 'quote_date'];
+        $quote_time = $row['quote_time'];
+
+        // if time is 8am, keep the date the same as the max entry and add 12 hours to the time
+        if ($quote_time == "08:00:00"){
+            $new_date = $quote_date;
+            $new_time = "20:00:00";
         }
-        if (isset($_POST["addTime"])){      
-            $time = $_POST["addTime"];
-        }   
 
-        // if date and time are set
-        if ($date != '' && isset($_POST["addTime"])){    
+        // if the time is 8pm add 1 day to the date and set the time as 8am
+        if ($quote_time == "20:00:00"){
+            $time_added = strtotime($quote_date) + (3600*36);
+            $new_date = date("Y-m-d", $time_added);
+            $new_time = "08:00:00";
+        }    
+
+        // if add phrase is set, attempt to add new phrase
+        if (isset($_POST["addName"])){
+
+            // set variables to post values
+            $name = $_POST["addName"];
+            $topic = $_POST["addTopic"];
+            $phrase = $_POST["addPhrase"];
+            if (isset($_POST["addDate"])){      
+                $date = $_POST["addDate"];
+            }
+            if (isset($_POST["addTime"])){      
+                $time = $_POST["addTime"];
+            }   
+
+            // if date and time are set
+            if ($date != '' && isset($_POST["addTime"])){    
+
+                // convert time to proper format
+                if ($time == "morning"){
+                    $time = "08:00:00";
+                }
+                if ($time == "evening"){
+                    $time = "20:00:00";
+                }
+
+                // check to see if date/time combo exists already in db
+                $sql="SELECT 1
+                    FROM quote_table
+                    WHERE quote_date='$date' AND quote_time='$time'";
+
+                $result = mysqli_query($conn, $sql);
+
+                // if date/time combo are unique, add the entry to the db
+                if($result !== false && $result->num_rows == 0){
+
+                    $sql = "INSERT INTO quote_table
+                    (author, topic, quote, quote_date, quote_time)
+                    VALUES ('$name', '$topic', '$phrase', '$date', '$time')";  
+        
+                    //outputs text if record is created
+                    if ($conn->query($sql) === TRUE){
+                        echo "<p class='notification_message'>Phrase added to database</p>";
+                    }
+                    //if connection fails, prints error message
+                    else{
+                        echo "<p class='notification_message'>error: " . $sql . "</p><br>" . $conn->error;
+                    }
+                } 
+
+                // else date and time combo already exist
+                else {
+                    echo "<p class='notification_message'>Date & Time combo already exist.</p>";
+                }
+            }
+
+            // if only date is set
+            else if ($_POST["addDate"] != ''){                          
+                echo "<p class='notification_message'>If you set date, you must set the time.</p>";
+            }
+
+            // if only time is set
+            else if (isset($_POST["addTime"])){                           
+                echo "<p class='notification_message'>If you set time, you must set the date.</p>";
+            }
+
+            // if neither date or time are set, set date/time automatically
+            else{                                                               
+                $sql = "INSERT INTO quote_table
+                (author, topic, quote, quote_date, quote_time)
+                VALUES ('$name', '$topic', '$phrase', '$new_date', '$new_time')";  
+
+                // outputs text if record is created
+                if ($conn->query($sql) === TRUE){
+                    echo "<p class='notification_message'>Phrase added to database</p>";
+                }
+                        
+                // if connection fails, prints error message
+                else{
+                    echo "error" . $sql . "<br>" . $conn->error;
+                }
+            }
+        }
+
+        // updates phrase if set 
+        if (isset($_POST["editId"])){
+            $id = $_POST["editId"];
+            $name = $_POST["editName"];
+            $topic = $_POST["editTopic"];
+            $phrase = $_POST["editPhrase"];
+            $date = $_POST["editDate"];
+            $time = $_POST["editTime"];
 
             // convert time to proper format
             if ($time == "morning"){
@@ -59,112 +143,37 @@
             // check to see if date/time combo exists already in db
             $sql="SELECT 1
                 FROM quote_table
-                WHERE quote_date='$date' AND quote_time='$time'";
+                WHERE quote_date='$date' AND quote_time='$time' AND id!='$id'";
 
             $result = mysqli_query($conn, $sql);
 
             // if date/time combo are unique, add the entry to the db
             if($result !== false && $result->num_rows == 0){
+                $sql = "UPDATE quote_table
+                SET author = '$name',
+                    topic = '$topic',
+                    quote = '$phrase',
+                    quote_date = '$date',
+                    quote_time = '$time'
+                    WHERE id = $id";
 
-                $sql = "INSERT INTO quote_table
-                (author, topic, quote, quote_date, quote_time)
-                VALUES ('$name', '$topic', '$phrase', '$date', '$time')";  
-    
-                //outputs text if record is created
+                // outputs text if record is created
                 if ($conn->query($sql) === TRUE){
-                    echo "<p class='notification_message'>Phrase added to database</p>";
+                    echo "<p class='notification_message'>Updated entry<p>";
                 }
-                //if connection fails, prints error message
+
+                // if connection fails, prints error message
                 else{
-                    echo "<p class='notification_message'>error: " . $sql . "</p><br>" . $conn->error;
+                    echo "error: " . $sql . "<br>" . $conn->error;
                 }
-            } 
-
-            // else date and time combo already exist
-            else {
+            }
+            // else don't update because date/time combo exist already
+            else{
                 echo "<p class='notification_message'>Date & Time combo already exist.</p>";
-            }
+            } 
         }
-
-        // if only date is set
-        else if ($_POST["addDate"] != ''){                          
-            echo "<p class='notification_message'>If you set date, you must set the time.</p>";
-        }
-
-        // if only time is set
-        else if (isset($_POST["addTime"])){                           
-            echo "<p class='notification_message'>If you set time, you must set the date.</p>";
-        }
-
-        // if neither date or time are set, set date/time automatically
-        else{                                                               
-            $sql = "INSERT INTO quote_table
-            (author, topic, quote, quote_date, quote_time)
-            VALUES ('$name', '$topic', '$phrase', '$new_date', '$new_time')";  
-
-            // outputs text if record is created
-            if ($conn->query($sql) === TRUE){
-                echo "<p class='notification_message'>Phrase added to database</p>";
-            }
-                    
-            // if connection fails, prints error message
-            else{
-                echo "error" . $sql . "<br>" . $conn->error;
-            }
-        }
-    }
-
-    // updates phrase if set 
-    if (isset($_POST["editId"])){
-        $id = $_POST["editId"];
-        $name = $_POST["editName"];
-        $topic = $_POST["editTopic"];
-        $phrase = $_POST["editPhrase"];
-        $date = $_POST["editDate"];
-        $time = $_POST["editTime"];
-
-        // convert time to proper format
-        if ($time == "morning"){
-            $time = "08:00:00";
-        }
-        if ($time == "evening"){
-            $time = "20:00:00";
-        }
-
-        // check to see if date/time combo exists already in db
-        $sql="SELECT 1
-            FROM quote_table
-            WHERE quote_date='$date' AND quote_time='$time' AND id!='$id'";
-
-        $result = mysqli_query($conn, $sql);
-
-        // if date/time combo are unique, add the entry to the db
-        if($result !== false && $result->num_rows == 0){
-            $sql = "UPDATE quote_table
-            SET author = '$name',
-                topic = '$topic',
-                quote = '$phrase',
-                quote_date = '$date',
-                quote_time = '$time'
-                WHERE id = $id";
-
-            // outputs text if record is created
-            if ($conn->query($sql) === TRUE){
-                echo "<p class='notification_message'>Updated entry<p>";
-            }
-
-            // if connection fails, prints error message
-            else{
-                echo "error: " . $sql . "<br>" . $conn->error;
-            }
-        }
-        // else don't update because date/time combo exist already
-        else{
-            echo "<p class='notification_message'>Date & Time combo already exist.</p>";
-        } 
-    }
-    // close connection to db
-    $conn -> close();
+        // close connection to db
+        $conn -> close();
  ?>
 
 <!DOCTYPE html>
@@ -293,6 +302,9 @@
     </form>
 </div>
 
+<?php
+    } // end of initial if statement
+?>
 <script>
     // get data via ajax request and populate table
     $(document).ready(function() {
