@@ -10,9 +10,8 @@ function processLogin() {
         $password = $_POST['password'];
 
         if (checkEmail($email)) {
-            $db_pass = getPassword($email);
 
-            if (strcmp($password, $db_pass) == 0) {
+            if (checkPassword($email, $password)) {
                 $_SESSION['loggedIn'] = true;
                 header("Location: hangman.php");
             } else {
@@ -28,10 +27,11 @@ function processLogin() {
 # checks database to see if email exists
 function checkEmail($email) {
     $email_exist = false;
-    $conn = dbConnect();
+    $apiReturn = file_get_contents('https://wpapi.telugupuzzles.com/api/userExists.php?email=' . $email);
 
-    $resultlog = mysqli_query($conn,"SELECT * FROM user_info WHERE user_email = '$email'") or die(mysqli_error($conn));
-    if (mysqli_num_rows($resultlog) > 0){
+    $parsedApiReturn = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $apiReturn), true );
+
+    if($parsedApiReturn["data"]){
         $email_exist = true;
     }
 
@@ -39,16 +39,19 @@ function checkEmail($email) {
 }
 
 # returns the password given an email
-function getPassword($email) {
-    $conn = dbConnect();
+function checkPassword($email, $password) {
+    $login_status = false;
+    $apiReturn = file_get_contents("https://wpapi.telugupuzzles.com/api/ws_login.php?email=".$email."&password=".$password);
+  
+    $parsedApiReturn = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $apiReturn), true );
 
-    $resultlog = mysqli_query($conn,"SELECT * FROM user_info WHERE user_email = '$email'") or die(mysqli_error($conn));
-    while($row = mysqli_fetch_array($resultlog)){
-        $password = $row['user_password'];
-    }
+        if($parsedApiReturn["data"]){
+        $login_status = true;
+        }
 
-    return $password;
+    return $login_status;
 }
+
 
 ?>
 
