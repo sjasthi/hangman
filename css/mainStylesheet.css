@@ -63,10 +63,7 @@ nav ul.nav-list {
   font-size: 18px;
   font-weight: 500;
 }
-i a {
-  text-decoration: none;
-  color: #000;
-}
+ 
 
 .nav-list li:hover .dropdown{
   
@@ -88,7 +85,7 @@ nav img {
   
 }
 
-nav ul.nav-list li:first-child {
+nav ul.nav-list > li:first-child {
  
   margin-right: auto;
 }
