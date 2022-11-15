@@ -132,15 +132,17 @@ function validateInputs()
 
         $guess_letter = $_GET['letter-guess']; // Get the letter from the URL.
         if (!in_array($guess_letter, $_SESSION["test"])) {
-            if (in_array($guess_letter, $_SESSION["baseChars"]) || in_array($guess_letter, $_SESSION["logicalChars"]) ) { // If the letter is a correct guess, update 'test' array.
+            if (in_array($guess_letter, $_SESSION["baseChars"]) || in_array($guess_letter, $_SESSION["logicalChars"]) ) { // If the letter is correct
                 updateArray($guess_letter);
             } else {
-                $_SESSION["guesses"] = $_SESSION["guesses"] + 1; // If the letter is incorrect, add one to guesses.
+                $_SESSION["guesses"] = $_SESSION["guesses"] + 1; // If the letter is incorrect
                 if ($_SESSION["guesses"] >= 6) {
                     $_SESSION["gameOver"] = true;
 
-                    setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
-                    setcookie("currentWinStreak", 0 , time()+3600);
+                    if ($_SESSION['countStats']) {
+                        setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
+                        setcookie("currentWinStreak", 0 , time()+3600);
+                    }
                 }
             }
         }
@@ -161,25 +163,25 @@ function validatePhrase() {
             $_SESSION["guesses"] = 7;
             $_SESSION["gameOver"] = true;
             
-            $currentWinStreak = $_COOKIE["numberOfGamesPlayed"] + 1;
-            setcookie("numberOfGamesPlayed", $currentWinStreak , time()+3600);
-            setcookie("numberOfGamesWon", $_COOKIE["numberOfGamesWon"] + 1 , time()+3600);
-            setcookie("currentWinStreak", $_COOKIE["currentWinStreak"] + 1 , time()+3600);
-
+            if ($_SESSION['countStats']) {
+                $currentWinStreak = $_COOKIE["numberOfGamesPlayed"] + 1;
+                setcookie("numberOfGamesPlayed", $currentWinStreak , time()+3600);
+                setcookie("numberOfGamesWon", $_COOKIE["numberOfGamesWon"] + 1 , time()+3600);
+                setcookie("currentWinStreak", $_COOKIE["currentWinStreak"] + 1 , time()+3600);
 
                 // set max winstreak
                 
                 if($_COOKIE["maxWinStreak"] <= $currentWinStreak){
                     setcookie("maxWinStreak", $currentWinStreak, time()+3600);
                 }
-
+            }
         } else {
             $_SESSION["guesses"] = 6;
             $_SESSION["gameOver"] = true;
-            setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
-            setcookie("currentWinStreak", 0 , time()+3600);
-
-        
+            if ($_SESSION['countStats']) {
+                setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
+                setcookie("currentWinStreak", 0 , time()+3600);
+            }
         }
     }
 }
@@ -313,9 +315,11 @@ function resetGame()
 
     if (isset($_GET['id'])) {
         $_SESSION['quote'] = getCustomQuote($_GET['id']);
+        $_SESSION['countStats'] = false;
     }
     else {
         $_SESSION['quote'] = getQuote($current_date, $current_time);
+        $_SESSION['countStats'] = true;
     }
     // $_SESSION['quote'] = getQuote($current_date, $current_time);
 
@@ -373,12 +377,7 @@ function getQuote($date, $time){
 }
 
 function getCustomQuote($id){
-    DEFINE('SERVER', 'localhost');
-    DEFINE('NAME', 'quotes_db');
-    DEFINE('USER', 'root');
-    DEFINE('PASS', '');
-
-    $conn = mysqli_connect(SERVER, USER, PASS, NAME);
+    $conn = dbConnect();
 
     $resultlog = mysqli_query($conn,"SELECT * FROM custom_quotes_table WHERE id = '$id'") or die(mysqli_error($conn));
     while($row = mysqli_fetch_array($resultlog)){
