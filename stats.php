@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 <script src="jquery/jquery.js"></script>
 <script src="js/player_stats.js"></script>
-
+<link rel="stylesheet" href="./css/hangman_style.css" />
 <?php
 
 function showWinPercentage()
@@ -22,10 +22,7 @@ function showWinPercentage()
 
 
 <div class="stats">
-  <?php
-  include('nav.php');
-  ?>
-
+ 
   <div>
     <input type="image" id="stats-btn" src="./images/leaderboard.png">
   </div>
@@ -100,4 +97,4 @@ function showWinPercentage()
 
   </div>
 
-</div>
+</div> 

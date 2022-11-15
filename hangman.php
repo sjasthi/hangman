@@ -411,7 +411,7 @@ function printGameVars() {
 
 <body>
     <?php
-    include("stats.php");
+    include("nav.php");
     printGameVars();
     ?>
 
