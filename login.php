@@ -2,7 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-include("db_credentials.php");
+include("db_configuration.php");
 
 function processLogin() {
     if (isset($_POST['email']) and isset($_POST['password'])) {

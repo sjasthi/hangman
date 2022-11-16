@@ -1,6 +1,6 @@
 
 <?php
-include('db_credentials.php');
+include('db_configuration.php');
 
 // db connection
 $con = dbConnect();

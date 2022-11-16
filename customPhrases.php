@@ -2,7 +2,7 @@
  <?php
     // header
     include('nav.php');
-    include('db_credentials.php');
+    include('db_configuration.php');
 
     // connect to db
 
