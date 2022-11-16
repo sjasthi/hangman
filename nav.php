@@ -9,6 +9,10 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!isset($_SESSION['userEmail'])) {
+    $_SESSION['userEmail'] = '';
+}
+
 function isLoggedIn()
 {
     if (isset($_SESSION['loggedIn'])) {
@@ -66,7 +70,10 @@ function isLoggedIn()
 
                 <?php } ?>
                 <?php
-                if (isLoggedIn()) {
+                // if user roll is "USER" show phrases tab (this needs to change to admin later)
+                $apiReturn = file_get_contents('https://wpapi.telugupuzzles.com/api/getRole.php?email=' . $_SESSION['userEmail']);
+                $parsedApiReturn = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $apiReturn), true );
+                if($parsedApiReturn["data"]=="USER"){
                 ?>
                     <a href="phrases.php">
                         <li>
@@ -78,15 +85,11 @@ function isLoggedIn()
                 }
                 ?>
 
-
-                <?php
-                if (isLoggedIn()) {  ?>
                 <a href="customPhrases.php">
                     <li>
                         Custom Phrases
                     </li>
                 </a>
-                <?php }?>
 
 
             </ul>
