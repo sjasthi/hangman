@@ -1,9 +1,3 @@
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-<script src="jquery/jquery.js"></script>
-<script src="js/user.js"></script>
-<link rel="stylesheet" href="./css/hangman_style.css" />
-
-
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -21,6 +15,12 @@ function isLoggedIn()
     return false;
 }
 ?>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+<!--- <script src="jquery/jquery.js"></script> -->
+<script src="js/user.js"></script> 
+<link rel="stylesheet" href="./css/hangman_style.css" />
+
 <nav>
     <link rel="stylesheet" href="./css/mainStylesheet.css">
 

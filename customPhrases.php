@@ -1,7 +1,9 @@
+<?php
+     if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
 
- <?php
     // header
-    include('nav.php');
     include('db_configuration.php');
 
     // connect to db
@@ -79,6 +81,9 @@
 </head>
 
 <body>
+    <?php
+    include('nav.php');
+    ?>
     <table id="example" class="display nowrap" style="width:100%" >
         <thead>
             <tr>
