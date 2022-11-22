@@ -206,7 +206,6 @@ function getBaseChars($quote)
             $result = array_merge($result, $decoded_data->data);
         }
     }
-    echo "<br>";
     return $result;
 }
 
@@ -412,7 +411,6 @@ function printGameVars() {
 <body>
     <?php
     include("nav.php");
-    printGameVars();
     ?>
 
 
@@ -449,23 +447,12 @@ function printGameVars() {
             </form>
 
         </div>
-
-        <div class="stats-container">
-            <div>
-                Longest Streak: 0
-            </div>
-
-
-            <div>Current Streak: 0</div>
-
-        </div>
-
         <!--- THIS IS TEMPORARY, USED TO RESET SESSION */ --->
+        <!---
         <form method="post">
             <input type="submit" name="button1" value="reset session" />
         </form>
-
-        
+        --->
         <!--- end of temporary section --->
 
     </div>

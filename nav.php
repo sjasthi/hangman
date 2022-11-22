@@ -35,7 +35,7 @@ function isLoggedIn()
         </li>
 
         <li id="title">
-            <h1>Hangman</h1>
+            <a href="index.php"><h1>Hangman</h1></a>
         </li>
 
 
