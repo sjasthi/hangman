@@ -1,5 +1,5 @@
 <?php
-     if (session_status() == PHP_SESSION_NONE) {
+    if (empty(session_id()) && !headers_sent()) {
         session_start();
     }
 

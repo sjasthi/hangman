@@ -1,8 +1,10 @@
 <?php
 include("db_configuration.php");
-if (session_status() == PHP_SESSION_NONE) {
+
+if (empty(session_id()) && !headers_sent()) {
     session_start();
 }
+
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 date_default_timezone_set('America/Chicago');
 
@@ -202,8 +204,10 @@ function getBaseChars($quote)
             $result = $decoded_data->data;
         }
         else {
-            array_push($result, " ");
-            $result = array_merge($result, $decoded_data->data);
+            if(!is_null($decoded_data->data)) {
+                array_push($result, " ");
+                $result = array_merge($result, $decoded_data->data);
+            }
         }
     }
     return $result;
