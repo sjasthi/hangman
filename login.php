@@ -1,4 +1,5 @@
 <?php
+ob_start();
 if (empty(session_id()) && !headers_sent()) {
     session_start();
 }
@@ -15,7 +16,6 @@ function processLogin() {
             if (checkPassword($email, $password)) {
                 $_SESSION['loggedIn'] = true;
                 header("Location: hangman.php");
-                return;
             } else {
                 echo "<p>Incorrect email/password. Please try again.</p></br>";
             }

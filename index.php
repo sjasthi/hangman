@@ -1,3 +1,9 @@
+<?php
+if (empty(session_id()) && !headers_sent()) {
+    session_start();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
