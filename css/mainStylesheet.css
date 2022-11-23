@@ -39,12 +39,10 @@ nav ul.nav-list {
   display: none;
   position: absolute;
   background-color: #f9f9f9;
-  height: 100px;
+  height: 180px;
   width: 200px;
   padding: 10px;
   z-index: 1;
-
-
 }
 
 .dropdown li:hover {
@@ -75,7 +73,7 @@ a{
 }
 
 #title {
-  margin-right: 40em;
+  margin: auto;
 }
 
 nav img {
@@ -95,6 +93,7 @@ nav ul.nav-list > li:first-child {
 nav a {
   text-decoration: none;
   font-weight: 600;
+  color: black;
 }
 
 

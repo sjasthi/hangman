@@ -1,8 +1,10 @@
 <?php
 include("db_configuration.php");
-if (session_status() == PHP_SESSION_NONE) {
+
+if (empty(session_id()) && !headers_sent()) {
     session_start();
 }
+
 define("letters", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 date_default_timezone_set('America/Chicago');
 
@@ -16,8 +18,6 @@ if (isset($_POST['button1'])) {
     header("Location: hangman.php");
     return;
 }
-
-// const quotes = array("App", "Television", "Hungry", "Basketball", "Hangman", "గోధుమరంగునక్క", "Hi there", "మిమ్ములని కలసినందుకు సంతోషం", "For What its Worth", "నేను దుకాణానికి వెళ్తున్నాను");
 
 // set cookie
 
@@ -40,14 +40,6 @@ if ($_SESSION["gameOver"] == true && $_SESSION["flag"] == true) {
     header("Location: hangman.php");
     return;
 }
-
-// Testing only. Remove or comment out later
-// echo "QUOTE: " . $_SESSION['quote'] . "<br>";
-// $current_day = date("Y-m-d");
-// echo "Current Date: " . $current_day . "<br>";
-// echo "Yesterday: " . date("Y-m-d", strtotime('-1 day', strtotime($current_day))) . "<br>";
-// echo "Current Time: " . date("H:i:s") . "<br>";
-
 
 // set the initial cookies to zero
 
@@ -202,11 +194,12 @@ function getBaseChars($quote)
             $result = $decoded_data->data;
         }
         else {
-            array_push($result, " ");
-            $result = array_merge($result, $decoded_data->data);
+            if(!is_null($decoded_data->data)) {
+                array_push($result, " ");
+                $result = array_merge($result, $decoded_data->data);
+            }
         }
     }
-    echo "<br>";
     return $result;
 }
 
@@ -412,7 +405,6 @@ function printGameVars() {
 <body>
     <?php
     include("nav.php");
-    printGameVars();
     ?>
 
 
@@ -449,23 +441,12 @@ function printGameVars() {
             </form>
 
         </div>
-
-        <div class="stats-container">
-            <div>
-                Longest Streak: 0
-            </div>
-
-
-            <div>Current Streak: 0</div>
-
-        </div>
-
         <!--- THIS IS TEMPORARY, USED TO RESET SESSION */ --->
+        <!---
         <form method="post">
             <input type="submit" name="button1" value="reset session" />
         </form>
-
-        
+        --->
         <!--- end of temporary section --->
 
     </div>

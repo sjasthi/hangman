@@ -1,8 +1,8 @@
 <?php
 DEFINE('DB_SERVER', 'localhost');
-DEFINE('DB_NAME', 'icsbinco_hangman_db');
-DEFINE('DB_USER', 'icsbinco_hangman_user');
-DEFINE('DB_PASS', 'ics499_fall2022');
+DEFINE('DB_NAME', 'quotes_db');
+DEFINE('DB_USER', 'root');
+DEFINE('DB_PASS', '');
 
 # connects to the mysql database
 function dbConnect(){
