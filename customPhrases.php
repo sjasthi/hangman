@@ -203,7 +203,7 @@
 
         $('#example').on( 'click', 'td.play_entry', function () {
             var data = table.row(this).data();
-            window.location.href = "hangman.php?id="+data['id'];
+            window.location.href = "customHangman.php?id="+data['id'];
         });
 
         // when delete button is clicked run the following function
