@@ -5,5 +5,6 @@ if (empty(session_id()) && !headers_sent()) {
 
 $_SESSION['loggedIn'] = false;
 $_SESSION['userEmail'] = '';
+$_SESSION['userPrivelege'] = '';
 header("Location: hangman.php");
 ?>

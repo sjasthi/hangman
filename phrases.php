@@ -4,10 +4,14 @@
     }
 
     // if user roll is "USER" show phrases tab (this needs to change to admin later)
-    $apiReturn = file_get_contents('https://wpapi.telugupuzzles.com/api/getRole.php?email=' . $_SESSION['userEmail']);
-    $parsedApiReturn = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $apiReturn), true );
+    //$apiReturn = file_get_contents('https://wpapi.telugupuzzles.com/api/getRole.php?email=' . $_SESSION['userEmail']);
+    //$parsedApiReturn = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $apiReturn), true );
 
-    if($parsedApiReturn["data"]=="USER"){
+    if(!isset($_SESSION['userPrivelege'])) {
+        $_SESSION['userPrivelege'] = '';
+    }
+
+    if($_SESSION['userPrivelege'] == "ADMIN"){
 
         include('db_configuration.php');
 

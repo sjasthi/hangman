@@ -9,14 +9,15 @@ date_default_timezone_set('America/Chicago');
 
 if (!isset($_SESSION['loggedIn'])) {
     $_SESSION['loggedIn'] = false;
+    $_SESSION['userPrivelege'] = '';
 }
 
 // Check if the reset button was pressed.
-// if (isset($_POST['button1'])) {
-//     resetGame();
-//     header("Location: hangman.php");
-//     return;
-// }
+if (isset($_POST['button1'])) {
+     resetGame();
+     header("Location: hangman.php");
+     return;
+ }
 
 // set cookie
 if (empty($_SESSION["input"])) {
@@ -36,10 +37,10 @@ if ($_SESSION["gameOver"] == true && $_SESSION["flag"] == true) {
 // set the initial cookies to zero
 
 function setInitialCookies(){
-    setcookie("numberOfGamesPlayed", 0, time()+3600);
-    setcookie("numberOfGamesWon", 0, time()+3600);
-    setcookie("currentWinStreak", 0, time()+3600);
-    setcookie("maxWinStreak", 0, time()+3600);
+    setcookie("numberOfGamesPlayed", 0, time() + (10 * 365 * 24 * 60 * 60));
+    setcookie("numberOfGamesWon", 0, time() + (10 * 365 * 24 * 60 * 60));
+    setcookie("currentWinStreak", 0, time() + (10 * 365 * 24 * 60 * 60));
+    setcookie("maxWinStreak", 0, time() + (10 * 365 * 24 * 60 * 60));
 }
 
 // Creates HTML for the buttons.
@@ -121,8 +122,8 @@ function validateInputs()
                 if ($_SESSION["guesses"] >= 6) {
                     $_SESSION["gameOver"] = true;
 
-                    setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
-                    setcookie("currentWinStreak", 0 , time()+3600);
+                    setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time() + (10 * 365 * 24 * 60 * 60));
+                    setcookie("currentWinStreak", 0 , time() + (10 * 365 * 24 * 60 * 60));
                 }
             }
         }
@@ -144,20 +145,20 @@ function validatePhrase() {
             $_SESSION["gameOver"] = true;
             
             $currentWinStreak = $_COOKIE["numberOfGamesPlayed"] + 1;
-            setcookie("numberOfGamesPlayed", $currentWinStreak , time()+3600);
-            setcookie("numberOfGamesWon", $_COOKIE["numberOfGamesWon"] + 1 , time()+3600);
-            setcookie("currentWinStreak", $_COOKIE["currentWinStreak"] + 1 , time()+3600);
+            setcookie("numberOfGamesPlayed", $currentWinStreak , time() + (10 * 365 * 24 * 60 * 60));
+            setcookie("numberOfGamesWon", $_COOKIE["numberOfGamesWon"] + 1 , time() + (10 * 365 * 24 * 60 * 60));
+            setcookie("currentWinStreak", $_COOKIE["currentWinStreak"] + 1 , time() + (10 * 365 * 24 * 60 * 60));
 
             // set max winstreak
                 
             if($_COOKIE["maxWinStreak"] <= $currentWinStreak){
-                setcookie("maxWinStreak", $currentWinStreak, time()+3600);
+                setcookie("maxWinStreak", $currentWinStreak, time() + (10 * 365 * 24 * 60 * 60));
             }
         } else {
             $_SESSION["guesses"] = 6;
             $_SESSION["gameOver"] = true;
-            setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time()+3600);
-            setcookie("currentWinStreak", 0 , time()+3600);
+            setcookie("numberOfGamesPlayed", $_COOKIE["numberOfGamesPlayed"] + 1 , time() + (10 * 365 * 24 * 60 * 60));
+            setcookie("currentWinStreak", 0 , time() + (10 * 365 * 24 * 60 * 60));
         }
     }
 }
@@ -397,13 +398,16 @@ function printGameVars() {
             </form>
 
         </div>
-        <!--- THIS IS TEMPORARY, USED TO RESET SESSION */ --->
-        <!---
-        <form method="post">
-            <input type="submit" name="button1" value="reset session" />
-        </form>
-        --->
-        <!--- end of temporary section --->
+        <?php
+        if ($_SESSION['userPrivelege'] == 'ADMIN') {
+        ?>
+            <form method="post">
+                <input type="submit" name="button1" value="reset session" />
+            </form>
+        <?php
+        }
+        ?>
+        
 
     </div>
 

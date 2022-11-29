@@ -1,5 +1,15 @@
 <?php
     if (empty(session_id()) && !headers_sent()) {
+    session_start();
+    }
+    if (!isset($_SESSION['userPrivelege'])) {
+        $_SESSION['userPrivelege'] = '';
+    }
+    if ( !($_SESSION['userPrivelege'] == "USER" or $_SESSION['userPrivelege'] == "ADMIN") ) {
+        echo "<p>Access Denied</p>";
+        return;
+    }
+    if (empty(session_id()) && !headers_sent()) {
         session_start();
     }
 
@@ -221,9 +231,9 @@
 
             // remove entry from ui
             table
-			.row($(this).parents('tr'))
-			.remove()
-		    .draw();
+            .row($(this).parents('tr'))
+            .remove()
+            .draw();
         });
 
         // when edit button is clicked run the following function
