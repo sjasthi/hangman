@@ -1,3 +1,9 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+<script src="jquery/jquery.js"></script>
+<script src="js/user.js"></script>
+<link rel="stylesheet" href="./css/hangman_style.css" />
+
+
 <?php
 if (empty(session_id()) && !headers_sent()) {
     session_start();
@@ -31,7 +37,7 @@ function isLoggedIn()
     <ul class="nav-list">
 
         <li>
-            <a href="hangman.php">
+            <a href="index.php">
 
                 <img src="./images/app_logo.png" alt="">
 
@@ -39,12 +45,23 @@ function isLoggedIn()
         </li>
 
         <li id="title">
-            <a href="hangman.php"><h1>Hangman</h1></a>
+            <a href="index.php"><h1>Hangman</h1></a>
         </li>
 
+        <li>
+            <a href="help.php">
+                <img src="./images/help_icon.png" alt="">
+            </a>
 
+        </li>
+        
         <li>
             <?php include('stats.php') ?>
+
+        </li>
+
+        
+
 
         </li>
 

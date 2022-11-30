@@ -15,7 +15,7 @@ if (!isset($_SESSION['loggedIn'])) {
 // Check if the reset button was pressed.
 if (isset($_POST['button1'])) {
      resetGame();
-     header("Location: hangman.php");
+     header("Location: index.php");
      return;
  }
 
@@ -30,7 +30,7 @@ setState();
 // Bandaid fix so cookies immediately update when a gameover happens.
 if ($_SESSION["gameOver"] == true && $_SESSION["flag"] == true) {
     $_SESSION["flag"] = false;
-    header("Location: hangman.php");
+    header("Location: index.php");
     return;
 }
 
@@ -389,7 +389,7 @@ function printGameVars() {
 
 
         <div class="button-container">
-            <form action="hangman.php" method="get">
+            <form action="index.php" method="get">
 
                 <?php
                 createButtons();

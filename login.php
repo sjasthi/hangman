@@ -15,7 +15,7 @@ function processLogin() {
             $_SESSION['loggedIn'] = true;
             $_SESSION['userEmail'] = $email;
             $_SESSION['userPrivelege'] = 'ADMIN';
-            header("Location: hangman.php");
+            header("Location: index.php");
             return;
         }
 
@@ -24,7 +24,7 @@ function processLogin() {
             if (checkPassword($email, $password)) {
                 $_SESSION['loggedIn'] = true;
                 $_SESSION['userPrivelege'] = 'USER';
-                header("Location: hangman.php");
+                header("Location: index.php");
                 return;
             } else {
                 echo "<p>Incorrect email/password. Please try again.</p></br>";
