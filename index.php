@@ -209,6 +209,16 @@ function getLength($quote)
     return $decoded_data->data;
 }
 
+// Use wpapi api to get the language of string
+function getLanguage($quote)
+{
+    $new_quote = str_replace(" ", "%20", $quote); // Converts spaces into a compatable charachter for the API.
+    $data = file_get_contents('https://wpapi.telugupuzzles.com/api/getLangForString.php?input1=' . $new_quote);
+    $santitize_data = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data);
+    $decoded_data = json_decode($santitize_data);
+    return $decoded_data->data;
+}
+
 //Updates session array for instance of the guess letter
 function updateArray($letter)
 {
@@ -291,6 +301,7 @@ function resetGame()
     $_SESSION["gameOver"] = false;
     $_SESSION["flag"] = true;
     $_SESSION["input"] = [];
+    $_SESSION["language"] = getLanguage($_SESSION['quote']);
     
     // initialize and dynamically fill both arrays base on the quote length
     $_SESSION["fullMatch"] = array_fill(0, $_SESSION["quoteLength"], false);
@@ -372,6 +383,12 @@ function printGameVars() {
 
             <div>
                 <img src="<?php setImage() ?>" alt="Hangman full">
+            </div>
+
+            <div class = "language">
+                <?php
+                    echo $_SESSION['language'];
+                ?>
             </div>
 
         </div>
