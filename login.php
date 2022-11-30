@@ -11,11 +11,21 @@ function processLogin() {
         $email = $_POST['email'];
         $password = $_POST['password'];
 
+        if ( ($email == 'hm_admin1@email.com' or $email == 'hm_admin2@email.com') and $password == 'ics499') {
+            $_SESSION['loggedIn'] = true;
+            $_SESSION['userEmail'] = $email;
+            $_SESSION['userPrivelege'] = 'ADMIN';
+            header("Location: index.php");
+            return;
+        }
+
         if (checkEmail($email)) {
 
             if (checkPassword($email, $password)) {
                 $_SESSION['loggedIn'] = true;
-                header("Location: hangman.php");
+                $_SESSION['userPrivelege'] = 'USER';
+                header("Location: index.php");
+                return;
             } else {
                 echo "<p>Incorrect email/password. Please try again.</p></br>";
             }

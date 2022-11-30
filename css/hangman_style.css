@@ -190,6 +190,7 @@ font-size: 15px;
   z-index: 1;
 }
 
+
 .player-stats {
   padding: 10px;
   height: 100%;
@@ -267,4 +268,12 @@ font-size: 15px;
 
 .stats {
   background-color: 'red';
+}
+.help-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding: 10px;
 }
